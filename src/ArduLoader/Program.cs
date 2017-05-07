@@ -78,7 +78,7 @@ namespace ArduLoader
         {
             RegistryKey key = Registry.ClassesRoot.OpenSubKey("arduboy");  
 
-            if (key == null)
+            //if (key == null)
             {
                 key = Registry.ClassesRoot.CreateSubKey("arduboy");
                 key.SetValue(string.Empty, "URL: arduboy Protocol");
