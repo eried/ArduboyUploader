@@ -16,6 +16,7 @@ namespace ArduLoader
     public partial class FormMain : Form
     {
         private bool _cancelNow = false;
+        private readonly string _input;
 
         public FormMain(string input)
         {
@@ -23,7 +24,8 @@ namespace ArduLoader
             InitializeComponent();
             tableLayoutPanelContents.BorderStyle = BorderStyle.FixedSingle;
 
-            backgroundWorkerUploader.RunWorkerAsync(input);
+            _input = input;
+            backgroundWorkerUploader.RunWorkerAsync();
         }
 
         private static bool IsLocalPath(string p, out string clean)
@@ -46,10 +48,11 @@ namespace ArduLoader
         private void backgroundWorkerUploader_DoWork(object sender, DoWorkEventArgs e)
         {
             string hex = "";
+            backgroundWorkerUploader.ReportProgress((int)UploadStatus.Searching);
 
             try
             {
-                var input = e.Argument as string;
+                var input = _input;
 
                 if (IsLocalPath(input,out input))
                 {
@@ -133,8 +136,7 @@ namespace ArduLoader
                 FileName = "avrdude.exe",
                 WorkingDirectory = Environment.CurrentDirectory,
                 WindowStyle = ProcessWindowStyle.Hidden,
-                //57600 
-                //Arguments = $"-C avrdude.conf -v -p atmega32u4 -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
+                //Arguments = $"-C avrdude.conf -v -p atmega32u4 -c avr109 -P {port} -b 57600 -D -U flash:w:\"{hex}\":i"
                 Arguments = $"-C custom.conf -p atmega32u4 -V -q -q -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
             };
 
@@ -156,10 +158,7 @@ namespace ArduLoader
                 {
                     avrdude.Kill();
                 }
-                catch (Exception)
-                {
-
-                }
+                catch (Exception){  }
             }
         }
 
@@ -180,6 +179,10 @@ namespace ArduLoader
         {
             switch((UploadStatus)e.ProgressPercentage)
             {
+                case UploadStatus.Searching:
+                    pictureBoxStatus.Image = Resources.searching;
+                    break;
+
                 case UploadStatus.Transfering:
                     pictureBoxStatus.Image = Resources.transfer;
                     break;
@@ -192,6 +195,8 @@ namespace ArduLoader
                 case UploadStatus.ErrorTransfering:
                     pictureBoxStatus.Image = Resources.error;
                     buttonCancel.Text = "&Close";
+                    buttonRetry.Enabled = true;
+                    buttonRetry.Visible = true;
                     break;
 
                 case UploadStatus.ErrorFile:
@@ -215,11 +220,20 @@ namespace ArduLoader
             if(_cancelNow)
                 Application.Exit();
         }
+
+        private void buttonRetry_Click(object sender, EventArgs e)
+        {
+            if(!backgroundWorkerUploader.IsBusy)
+            {
+                buttonRetry.Enabled = false;
+                backgroundWorkerUploader.RunWorkerAsync();
+            }
+        }
     }
 
     internal enum UploadStatus
     {
-        Transfering=1,Done,ErrorTransfering,ErrorFile,
+        Transfering,Done,ErrorTransfering,ErrorFile,Searching,
     }
     public class WebDownload : WebClient
     {

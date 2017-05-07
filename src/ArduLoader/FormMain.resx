@@ -121,6 +121,25 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="buttonCancel.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAC3SURBVDhPpdJBCgIxDIXhbr2AIIhn8AKe0Z2HEASXHs98qZXOOCNif3hMmuaFpp2ywDF0Cd1C
+        15fEcvZW2YQUnUMHiRly9tSonSBxD51y9R01aidNdP3F3FDLk5jL0Rrb0K6GE+TsNXjyTnTqZ1b4CO1z
+        VRHL9Y158hRueE4z+PbxnPR6piWacc2M9A43GB5h+BKHnxE6/f0jYfhXhoSujtbfSUPOnpoPc4+5FLlh
+        z0RiuffMlVKeA5ArcQnKmOEAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="buttonRetry.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAD+SURBVDhPpZJLDgFBFEVbCLEJYWBmIBJDMTazHhtgZmYDJkKIHYipxJ7c8+qTat3te5LTXfXq
+        ver6dFbCUG7kUe69tIkxVklbkrSWHQJPEGOMHHJzEDjLifVeQw65uUmYNS2eS5Z98NImFiCXGoN9sbTA
+        Si5k03oO2sSW1nNQY2fCTGHPfIXEKkb+DdTYKlhezUs7/fI7yLdrGsitvEqCDVlGX97k1Hqu1j3ETN5l
+        z3pFOPWdvMiT7EqrtWV8CNsjvyXrvp07RBj7dxkccLjOeIjfXCNjgXiNwEw//0jw968MBJiVpaVnEiDG
+        GDmF4hT2RRLL5pqQNrG4Z0eWPQBdEzUB3Ju9DAAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAMAMDAAAAEAIACoJQAANgAAACAgAAABACAAqBAAAN4lAAAQEAAAAQAgAGgEAACGNgAAKAAAADAA

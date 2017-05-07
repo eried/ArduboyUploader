@@ -33,6 +33,7 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tableLayoutPanelContents = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBoxStatus = new System.Windows.Forms.PictureBox();
+            this.buttonRetry = new System.Windows.Forms.Button();
             this.tableLayoutPanelContents.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatus)).BeginInit();
             this.SuspendLayout();
@@ -49,22 +50,28 @@
             this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlText;
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonCancel.Location = new System.Drawing.Point(89, 147);
+            this.buttonCancel.Image = ((System.Drawing.Image)(resources.GetObject("buttonCancel.Image")));
+            this.buttonCancel.Location = new System.Drawing.Point(100, 147);
             this.buttonCancel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(102, 30);
+            this.buttonCancel.Size = new System.Drawing.Size(80, 30);
             this.buttonCancel.TabIndex = 0;
             this.buttonCancel.TabStop = false;
             this.buttonCancel.Text = "&Cancel";
+            this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.buttonCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // tableLayoutPanelContents
             // 
-            this.tableLayoutPanelContents.ColumnCount = 1;
-            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelContents.ColumnCount = 3;
+            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanelContents.Controls.Add(this.pictureBoxStatus, 0, 0);
-            this.tableLayoutPanelContents.Controls.Add(this.buttonCancel, 0, 1);
+            this.tableLayoutPanelContents.Controls.Add(this.buttonCancel, 1, 1);
+            this.tableLayoutPanelContents.Controls.Add(this.buttonRetry, 0, 1);
             this.tableLayoutPanelContents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelContents.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelContents.Name = "tableLayoutPanelContents";
@@ -79,6 +86,7 @@
             // 
             this.pictureBoxStatus.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.pictureBoxStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tableLayoutPanelContents.SetColumnSpan(this.pictureBoxStatus, 3);
             this.pictureBoxStatus.Image = global::ArduLoader.Properties.Resources.searching;
             this.pictureBoxStatus.Location = new System.Drawing.Point(12, 13);
             this.pictureBoxStatus.Name = "pictureBoxStatus";
@@ -86,6 +94,23 @@
             this.pictureBoxStatus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoxStatus.TabIndex = 1;
             this.pictureBoxStatus.TabStop = false;
+            // 
+            // buttonRetry
+            // 
+            this.buttonRetry.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.buttonRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonRetry.Image = ((System.Drawing.Image)(resources.GetObject("buttonRetry.Image")));
+            this.buttonRetry.Location = new System.Drawing.Point(12, 146);
+            this.buttonRetry.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
+            this.buttonRetry.Name = "buttonRetry";
+            this.buttonRetry.Size = new System.Drawing.Size(80, 30);
+            this.buttonRetry.TabIndex = 2;
+            this.buttonRetry.Text = "&Retry";
+            this.buttonRetry.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.buttonRetry.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.buttonRetry.UseVisualStyleBackColor = true;
+            this.buttonRetry.Visible = false;
+            this.buttonRetry.Click += new System.EventHandler(this.buttonRetry_Click);
             // 
             // FormMain
             // 
@@ -115,6 +140,7 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.PictureBox pictureBoxStatus;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelContents;
+        private System.Windows.Forms.Button buttonRetry;
     }
 }
 
