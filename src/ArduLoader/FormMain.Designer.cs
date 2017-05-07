@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.backgroundWorkerUploader = new System.ComponentModel.BackgroundWorker();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.tableLayoutPanelContents = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBoxStatus = new System.Windows.Forms.PictureBox();
             this.buttonRetry = new System.Windows.Forms.Button();
+            this.toolTipInfo = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanelContents.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatus)).BeginInit();
             this.SuspendLayout();
@@ -105,12 +107,24 @@
             this.buttonRetry.Name = "buttonRetry";
             this.buttonRetry.Size = new System.Drawing.Size(80, 30);
             this.buttonRetry.TabIndex = 2;
+            this.buttonRetry.TabStop = false;
             this.buttonRetry.Text = "&Retry";
             this.buttonRetry.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.buttonRetry.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.toolTipInfo.SetToolTip(this.buttonRetry, "Try the following:\r\n-Check that the Arduboy is connected and powered on\r\n-Try to " +
+        "use a different USB cable and port\r\n-Hold UP while powering on the Arduboy\r\n-Rei" +
+        "nstall the Arduino Leonardo drivers");
             this.buttonRetry.UseVisualStyleBackColor = true;
             this.buttonRetry.Visible = false;
             this.buttonRetry.Click += new System.EventHandler(this.buttonRetry_Click);
+            // 
+            // toolTipInfo
+            // 
+            this.toolTipInfo.AutoPopDelay = 20000;
+            this.toolTipInfo.InitialDelay = 500;
+            this.toolTipInfo.ReshowDelay = 100;
+            this.toolTipInfo.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.toolTipInfo.ToolTipTitle = "Still can\'t upload?";
             // 
             // FormMain
             // 
@@ -141,6 +155,7 @@
         private System.Windows.Forms.PictureBox pictureBoxStatus;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelContents;
         private System.Windows.Forms.Button buttonRetry;
+        private System.Windows.Forms.ToolTip toolTipInfo;
     }
 }
 
