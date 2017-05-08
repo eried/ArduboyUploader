@@ -93,6 +93,16 @@ namespace ArduLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap error3 {
+            get {
+                object obj = ResourceManager.GetObject("error3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap searching {
             get {
                 object obj = ResourceManager.GetObject("searching", resourceCulture);

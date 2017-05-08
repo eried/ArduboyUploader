@@ -55,16 +55,16 @@ namespace ArduLoader
             {
                 var input = _input;
 
-                if (IsLocalPath(input,out input))
+                if (IsLocalPath(input, out input))
                 {
                     // Decompress if needed
-                    if(Path.GetExtension(input).ToLower()==".arduboy")
+                    if (Path.GetExtension(input).ToLower() == ".arduboy")
                     {
                         var tmpFolder = Path.GetTempFileName();
                         File.Delete(tmpFolder);
                         ZipFile.ExtractToDirectory(input, Directory.CreateDirectory(tmpFolder).FullName);
 
-                        foreach(var f in Directory.GetFiles(tmpFolder, "*.hex", SearchOption.AllDirectories))
+                        foreach (var f in Directory.GetFiles(tmpFolder, "*.hex", SearchOption.AllDirectories))
                         {
                             input = f; // Only use the first one
                             break;
@@ -109,7 +109,7 @@ namespace ArduLoader
                     backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                     return;
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
 
             if (_cancelNow)
@@ -122,7 +122,7 @@ namespace ArduLoader
                 arduboy.DtrEnable = true;
                 arduboy.Open();
 
-                while(!arduboy.IsOpen)
+                while (!arduboy.IsOpen)
                     Thread.Sleep(100);
 
                 arduboy.DtrEnable = false;
@@ -133,7 +133,7 @@ namespace ArduLoader
             }
             catch (Exception ex)
             {
-                LogError("Error putting the Arduboy in bootloader: "  + ex.Message);
+                LogError("Error putting the Arduboy in bootloader: " + ex.Message);
                 backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                 return;
             }
@@ -158,34 +158,43 @@ namespace ArduLoader
             var processStartInfo = new ProcessStartInfo()
             {
                 CreateNoWindow = true,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
                 UseShellExecute = false,
                 FileName = "avrdude.exe",
                 WorkingDirectory = Environment.CurrentDirectory,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 //Arguments = $"-C avrdude.conf -v -p atmega32u4 -c avr109 -P {port} -b 57600 -D -U flash:w:\"{hex}\":i"
-                Arguments = $"-C custom.conf -p atmega32u4 -V -q -q -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
+                Arguments = $"-C custom.conf -p atmega32u4 -V -q -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
             };
 
             backgroundWorkerUploader.ReportProgress((int)UploadStatus.Transfering);
 
             var avrdude = new Process { StartInfo = processStartInfo };
             avrdude.Start();
+            var status = UploadStatus.ErrorAvrDude;
+            avrdude.WaitForExit(10000);
 
-            if (avrdude.WaitForExit(15000))
+            // Check the output to see if it was successful
+            var standardOutput = avrdude.StandardError.ReadToEnd() + Environment.NewLine + avrdude.StandardOutput.ReadToEnd();
+
+            if (standardOutput.Contains("bytes of flash written") && standardOutput.Contains("Fuses OK") &&
+                standardOutput.Contains("AVR device initialized") && standardOutput.Contains("done"))
+                status = UploadStatus.Done;
+            else
+                LogError("Error uploading the file to the Arduboy: " + standardOutput);
+
+            if (status == UploadStatus.Done)
             {
-                backgroundWorkerUploader.ReportProgress((int)UploadStatus.Done);
+                backgroundWorkerUploader.ReportProgress((int)status);
                 Thread.Sleep(500);
                 _cancelNow = true;
             }
             else
             {
-                LogError("Error uploading the file to the Arduboy");
-                backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
-                try
-                {
-                    avrdude.Kill();
-                }
-                catch (Exception){  }
+                // Error while transfering
+                try { avrdude.Kill(); } catch { } // Kill any leftover
+                backgroundWorkerUploader.ReportProgress((int)status);
             }
         }
 
@@ -218,7 +227,8 @@ namespace ArduLoader
 
         private void backgroundWorkerUploader_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            switch((UploadStatus)e.ProgressPercentage)
+            var status = (UploadStatus)e.ProgressPercentage;
+            switch (status)
             {
                 case UploadStatus.Searching:
                     pictureBoxStatus.Image = Resources.searching;
@@ -233,8 +243,9 @@ namespace ArduLoader
                     buttonCancel.Enabled = false;
                     break;
 
+                case UploadStatus.ErrorAvrDude:
                 case UploadStatus.ErrorTransfering:
-                    pictureBoxStatus.Image = Resources.error;
+                    pictureBoxStatus.Image = status== UploadStatus.ErrorAvrDude? Resources.error3: Resources.error;
                     buttonCancel.Text = "&Close";
                     buttonRetry.Enabled = true;
                     buttonRetry.Visible = true;
@@ -274,7 +285,7 @@ namespace ArduLoader
 
     internal enum UploadStatus
     {
-        Transfering,Done,ErrorTransfering,ErrorFile,Searching,
+        Transfering,Done,ErrorTransfering,ErrorFile,Searching,ErrorAvrDude
     }
     public class WebDownload : WebClient
     {
