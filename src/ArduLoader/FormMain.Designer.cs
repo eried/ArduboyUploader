@@ -143,6 +143,7 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Arduboy Upload";
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.tableLayoutPanelContents.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatus)).EndInit();
             this.ResumeLayout(false);

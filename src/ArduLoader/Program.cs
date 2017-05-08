@@ -20,18 +20,17 @@ namespace ArduLoader
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            var f = new FormMain();
 
-            var hex = "";
             if (Environment.GetCommandLineArgs().Length <= 1)
             {
-                var openFile = new OpenFileDialog();
-                openFile.Filter = "Compatible files|*.hex;*.arduboy|Hex File|*.hex|Arduboy File|*.arduboy";
-                openFile.Title = "Select a file to upload to Arduboy";
-
-                if (openFile.ShowDialog() == DialogResult.OK)
-                    hex = openFile.FileName;
-                else
-                    Application.Exit();
+                var openFile = new OpenFileDialog
+                {
+                    Filter = "Compatible files|*.hex;*.arduboy|Hex File|*.hex|Arduboy File|*.arduboy",
+                    Title = "Select a file to upload to Arduboy",
+                };
+                if (openFile.ShowDialog(f) == DialogResult.OK)
+                    f.InputFile = openFile.FileName;
             }
             else
             {
@@ -40,11 +39,11 @@ namespace ArduLoader
                 if (c.ToLower().Trim() == "-register")
                     CheckAssociations();
                 else
-                    hex = Environment.GetCommandLineArgs()[1];
+                    f.InputFile = Environment.GetCommandLineArgs()[1];
             }
 
-            if(hex.Length>0)
-                Application.Run(new FormMain(hex));
+            if (!String.IsNullOrEmpty(f.InputFile))
+                Application.Run(f);
         }
 
         private static void CheckAssociations()
@@ -55,17 +54,19 @@ namespace ArduLoader
 
                 if (MessageBox.Show("Would you like to associate the '.hex' files with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {
-                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\hexfile", "", "Hex file");
-                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\hexfile", "FriendlyTypeName", l);
-                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\hexfile\\shell\\open\\command", "", l + " \"%1\"");
+                    var k = "HKEY_CURRENT_USER\\Software\\Classes\\hexfile";
+                    Registry.SetValue(k, "", "Hex file");
+                    Registry.SetValue(k, "FriendlyTypeName", l);
+                    Registry.SetValue(k+ "\\shell\\open\\command", "", l + " \"%1\"");
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\.hex", "", "hexfile");
                 }
 
                 if (MessageBox.Show("Would you like to associate the '.arduboy' files with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {
-                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile", "", "Arduboy file");
-                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile", "FriendlyTypeName", l);
-                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile\\shell\\open\\command", "", l + " \"%1\"");
+                    var k = "HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile";
+                    Registry.SetValue(k, "", "Arduboy file");
+                    Registry.SetValue(k, "FriendlyTypeName", l);
+                    Registry.SetValue(k+ "\\shell\\open\\command", "", l + " \"%1\"");
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\.arduboy", "", "arduboyfile");
                 }
 
@@ -82,19 +83,14 @@ namespace ArduLoader
             Application.Exit();
         }
 
-        private static void RegisterMyProtocol(string app) 
+        private static void RegisterMyProtocol(string app)
         {
-            RegistryKey key = Registry.ClassesRoot.OpenSubKey("arduboy");  
-
-            //if (key == null)
-            {
-                key = Registry.ClassesRoot.CreateSubKey("arduboy");
-                key.SetValue(string.Empty, "URL: arduboy Protocol");
-                key.SetValue("URL Protocol", string.Empty);
-                key = key.CreateSubKey(@"shell\open\command");
-                key.SetValue(string.Empty, app + " " + "%1");
-            }
-
+            RegistryKey key = Registry.ClassesRoot.OpenSubKey("arduboy");
+            key = Registry.ClassesRoot.CreateSubKey("arduboy");
+            key.SetValue(string.Empty, "URL: arduboy Protocol");
+            key.SetValue("URL Protocol", string.Empty);
+            key = key.CreateSubKey(@"shell\open\command");
+            key.SetValue(string.Empty, app + " " + "%1");
             key.Close();
         }
 

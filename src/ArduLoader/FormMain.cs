@@ -17,16 +17,13 @@ namespace ArduLoader
     public partial class FormMain : Form
     {
         private bool _cancelNow = false;
-        private readonly string _input;
+        internal string InputFile;
 
-        public FormMain(string input)
+        public FormMain()
         {
             Environment.CurrentDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             InitializeComponent();
             tableLayoutPanelContents.BorderStyle = BorderStyle.FixedSingle;
-
-            _input = input;
-            backgroundWorkerUploader.RunWorkerAsync();
         }
 
         private static bool IsLocalPath(string p, out string clean)
@@ -53,7 +50,7 @@ namespace ArduLoader
 
             try
             {
-                var input = _input;
+                var input = InputFile;
 
                 if (IsLocalPath(input, out input))
                 {
@@ -285,6 +282,11 @@ namespace ArduLoader
                 buttonRetry.Enabled = false;
                 backgroundWorkerUploader.RunWorkerAsync();
             }
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            backgroundWorkerUploader.RunWorkerAsync();
         }
     }
 
