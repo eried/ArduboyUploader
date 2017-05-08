@@ -215,13 +215,18 @@ namespace ArduLoader
         private bool GetArduboyPort(out string port)
         {
             port = "";
-            using (var s = new ManagementObjectSearcher("SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR(PNPDeviceID LIKE '%VID_2341%PID_0036%')"))
-                foreach (ManagementBaseObject p in s.Get().Cast<ManagementBaseObject>().ToList())
+            using (var s = new ManagementObjectSearcher("SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE" +
+                "(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR " +
+                "(PNPDeviceID LIKE '%VID_2341%PID_0036%') OR " +
+                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + // SparkFun Pro Micro
+                "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")) // SparkFun Pro Micro
+            {
+                foreach (var p in s.Get().Cast<ManagementBaseObject>().ToList())
                 {
                     port = p.GetPropertyValue("DeviceID").ToString();
                     return true;
                 }
-
+            }
             return false;
         }
 
