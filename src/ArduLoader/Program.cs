@@ -25,7 +25,7 @@ namespace ArduLoader
             if (Environment.GetCommandLineArgs().Length <= 1)
             {
                 var openFile = new OpenFileDialog();
-                openFile.Filter = "Supported files (*.hex;*.arduboy)|*.hex;*.arduboy|Hex File (*.hex)|*.hex|Arduboy File (*.arduboy)|*.arduboy";
+                openFile.Filter = "Compatible files|*.hex;*.arduboy|Hex File|*.hex|Arduboy File|*.arduboy";
                 openFile.Title = "Select a file to upload to Arduboy";
 
                 if (openFile.ShowDialog() == DialogResult.OK)

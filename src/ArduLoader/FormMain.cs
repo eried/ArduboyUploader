@@ -118,15 +118,22 @@ namespace ArduLoader
             // Reset it
             try
             {
-                var arduboy = new SerialPort(port, 1200);
+                var arduboy = new SerialPort { BaudRate = 1200, PortName = port };
+                arduboy.DtrEnable = true;
                 arduboy.Open();
-                Thread.Sleep(500);
+
+                while(!arduboy.IsOpen)
+                    Thread.Sleep(100);
+
                 arduboy.DtrEnable = false;
                 arduboy.Close();
+                arduboy.Dispose();
+
+                Thread.Sleep(1000);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                LogError("Error putting the Arduboy in bootloader: " + ex.Message);
+                LogError("Error putting the Arduboy in bootloader: "  + ex.Message);
                 backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                 return;
             }
@@ -135,7 +142,7 @@ namespace ArduLoader
             // Search again
             while (!GetArduboyPort(out port))
             {
-                if (s.ElapsedMilliseconds > 15000)
+                if (s.ElapsedMilliseconds > 10000)
                 {
                     LogError("Timeout waiting for the Arduboy to appear again");
                     backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);

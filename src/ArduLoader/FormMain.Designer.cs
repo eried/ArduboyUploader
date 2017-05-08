@@ -49,7 +49,7 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlText;
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonCancel.Image = ((System.Drawing.Image)(resources.GetObject("buttonCancel.Image")));
@@ -99,10 +99,10 @@
             // 
             // buttonRetry
             // 
-            this.buttonRetry.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.buttonRetry.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.buttonRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonRetry.Image = ((System.Drawing.Image)(resources.GetObject("buttonRetry.Image")));
-            this.buttonRetry.Location = new System.Drawing.Point(12, 146);
+            this.buttonRetry.Location = new System.Drawing.Point(12, 147);
             this.buttonRetry.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
             this.buttonRetry.Name = "buttonRetry";
             this.buttonRetry.Size = new System.Drawing.Size(80, 30);
