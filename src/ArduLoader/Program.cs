@@ -25,7 +25,7 @@ namespace ArduLoader
             if (Environment.GetCommandLineArgs().Length <= 1)
             {
                 var openFile = new OpenFileDialog();
-                openFile.Filter = "Hex File (*.hex)|*.hex";
+                openFile.Filter = "Supported files (*.hex;*.arduboy)|*.hex;*.arduboy|Hex File (*.hex)|*.hex|Arduboy File (*.arduboy)|*.arduboy";
                 openFile.Title = "Select a file to upload to Arduboy";
 
                 if (openFile.ShowDialog() == DialogResult.OK)
@@ -59,6 +59,14 @@ namespace ArduLoader
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\hexfile", "FriendlyTypeName", l);
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\hexfile\\shell\\open\\command", "", l + " \"%1\"");
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\.hex", "", "hexfile");
+                }
+
+                if (MessageBox.Show("Would you like to associate the '.arduboy' files with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                {
+                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile", "", "Arduboy file");
+                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile", "FriendlyTypeName", l);
+                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile\\shell\\open\\command", "", l + " \"%1\"");
+                    Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\.arduboy", "", "arduboyfile");
                 }
 
                 if (MessageBox.Show("Would you like to associate the 'arduboy:' protocol with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)

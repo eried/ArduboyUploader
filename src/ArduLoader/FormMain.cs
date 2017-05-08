@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
@@ -56,6 +57,21 @@ namespace ArduLoader
 
                 if (IsLocalPath(input,out input))
                 {
+                    // Decompress if needed
+                    if(Path.GetExtension(input).ToLower()==".arduboy")
+                    {
+                        var tmpFolder = Path.GetTempFileName();
+                        File.Delete(tmpFolder);
+                        ZipFile.ExtractToDirectory(input, Directory.CreateDirectory(tmpFolder).FullName);
+
+                        foreach(var f in Directory.GetFiles(tmpFolder, "*.hex", SearchOption.AllDirectories))
+                        {
+                            input = f; // Only use the first one
+                            break;
+                        }
+                    }
+
+                    // Check the hex file (maximum size 90 KB, just to be sure)
                     if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" || new FileInfo(input).Length > 90 * 1024)
                     {
                         throw new Exception("Invalid hex file");
@@ -122,7 +138,7 @@ namespace ArduLoader
                     backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                     return;
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
 
             if (_cancelNow)
@@ -148,7 +164,7 @@ namespace ArduLoader
             if (avrdude.WaitForExit(10000))
             {
                 backgroundWorkerUploader.ReportProgress((int)UploadStatus.Done);
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 _cancelNow = true;
             }
             else
