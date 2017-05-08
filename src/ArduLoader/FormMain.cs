@@ -105,6 +105,7 @@ namespace ArduLoader
 
                 if (s.ElapsedMilliseconds > 15000)
                 {
+                    LogError("Timeout waiting for the Arduboy");
                     backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                     return;
                 }
@@ -123,8 +124,9 @@ namespace ArduLoader
                 arduboy.DtrEnable = false;
                 arduboy.Close();
             }
-            catch
+            catch(Exception ex)
             {
+                LogError("Error putting the Arduboy in bootloader: " + ex.Message);
                 backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                 return;
             }
@@ -133,8 +135,9 @@ namespace ArduLoader
             // Search again
             while (!GetArduboyPort(out port))
             {
-                if (s.ElapsedMilliseconds > 6000)
+                if (s.ElapsedMilliseconds > 15000)
                 {
+                    LogError("Timeout waiting for the Arduboy to appear again");
                     backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                     return;
                 }
@@ -161,7 +164,7 @@ namespace ArduLoader
             var avrdude = new Process { StartInfo = processStartInfo };
             avrdude.Start();
 
-            if (avrdude.WaitForExit(10000))
+            if (avrdude.WaitForExit(15000))
             {
                 backgroundWorkerUploader.ReportProgress((int)UploadStatus.Done);
                 Thread.Sleep(500);
@@ -169,6 +172,7 @@ namespace ArduLoader
             }
             else
             {
+                LogError("Error uploading the file to the Arduboy");
                 backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                 try
                 {
@@ -176,6 +180,20 @@ namespace ArduLoader
                 }
                 catch (Exception){  }
             }
+        }
+
+        private void LogError(string msg)
+        {
+            try
+            {
+                using (EventLog eventLog = new EventLog("Application"))
+                {
+                    eventLog.Source = "Application";
+                    eventLog.WriteEntry(msg, EventLogEntryType.Warning);
+                }
+            }
+            catch 
+            {  }
         }
 
         private bool GetArduboyPort(out string port)
