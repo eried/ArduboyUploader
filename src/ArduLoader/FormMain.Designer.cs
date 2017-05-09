@@ -111,9 +111,7 @@
             this.buttonRetry.Text = "&Retry";
             this.buttonRetry.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.buttonRetry.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.toolTipInfo.SetToolTip(this.buttonRetry, "Try the following:\r\n-Check that the Arduboy is connected and powered on\r\n-Try to " +
-        "use a different USB cable and port\r\n-Hold UP while powering on the Arduboy\r\n-Rei" +
-        "nstall the Arduino Leonardo drivers");
+            this.toolTipInfo.SetToolTip(this.buttonRetry, resources.GetString("buttonRetry.ToolTip"));
             this.buttonRetry.UseVisualStyleBackColor = true;
             this.buttonRetry.Visible = false;
             this.buttonRetry.Click += new System.EventHandler(this.buttonRetry_Click);
