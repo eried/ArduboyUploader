@@ -136,13 +136,38 @@
   <data name="error3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\img\error3.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="avrdude_exe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="avrdude" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\avrdude\avrdude.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="custom_conf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="custom" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\avrdude\custom.conf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="libusb0_dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="libusb0" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\avrdude\libusb0.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ParamAvrDudeFolder" xml:space="preserve">
+    <value>avrdude-6.3</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="WaitBootloaderMs" type="System.Int32, mscorlib">
+    <value>8000</value>
+  </data>
+  <data name="WaitAfterResetMs" type="System.Int32, mscorlib">
+    <value>1000</value>
+  </data>
+  <data name="WaitSearchingMs" type="System.Int32, mscorlib">
+    <value>15000</value>
+  </data>
+  <data name="WaitIdleSlowMs" type="System.Int32, mscorlib">
+    <value>500</value>
+  </data>
+  <data name="WaitIdleFastMs" type="System.Int32, mscorlib">
+    <value>100</value>
+  </data>
+  <data name="WaitSuccessMs" type="System.Int32, mscorlib">
+    <value>500</value>
+  </data>
+  <data name="ParamMaximumHexFilesizeKB" type="System.Int32, mscorlib">
+    <value>90</value>
   </data>
 </root>

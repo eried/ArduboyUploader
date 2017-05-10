@@ -6,7 +6,6 @@ using System.IO.Compression;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -16,20 +15,25 @@ namespace ArduboyUploader
 {
     public partial class FormMain : Form
     {
-        private bool _cancelNow = false;
+        private bool _cancelNow;
         internal string InputFile;
 
         public FormMain()
         {
-            Environment.CurrentDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             InitializeComponent();
             tableLayoutPanelContents.BorderStyle = BorderStyle.FixedSingle;
         }
 
-        private static bool IsLocalPath(string p, out string clean)
+        /// <summary>
+        /// Checks if the provided path is local or remote
+        /// </summary>
+        /// <param name="path">Path to check</param>
+        /// <param name="clean">Return the path clean if needed</param>
+        /// <returns>True if the path is local</returns>
+        private static bool IsLocalPath(string path, out string clean)
         {
-            var u = new Uri(p);
-            clean = p;
+            var u = new Uri(path);
+            clean = path;
 
             if (u.IsFile)
                 return true;
@@ -37,7 +41,7 @@ namespace ArduboyUploader
             {
                 const string arduboyProtocol = "arduboy";
                 if (u.Scheme == arduboyProtocol)
-                    clean = p.Substring(arduboyProtocol.Length + 1); // Remove the custom protocol
+                    clean = path.Substring(arduboyProtocol.Length + 1); // Remove the custom protocol
 
                 return false;
             }
@@ -45,11 +49,11 @@ namespace ArduboyUploader
 
         private void backgroundWorkerUploader_DoWork(object sender, DoWorkEventArgs e)
         {
-            string hex = "";
             backgroundWorkerUploader.ReportProgress((int)UploadStatus.Searching);
 
             try
             {
+                string hex;
                 try
                 {
                     var input = InputFile;
@@ -72,12 +76,12 @@ namespace ArduboyUploader
 
                         // Check the hex file (maximum size 90 KB, just to be sure)
                         if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" ||
-                            new FileInfo(input).Length > 90 * 1024)
+                            new FileInfo(input).Length > Resources.ParamMaximumHexFilesizeKB * 1024)
                         {
                             throw new Exception("Invalid hex file");
                         }
-                        else
-                            hex = input;
+
+                        hex = input;
                     }
                     else
                     {
@@ -103,13 +107,13 @@ namespace ArduboyUploader
                     if (_cancelNow)
                         return;
 
-                    if (s.ElapsedMilliseconds > 15000)
+                    if (s.ElapsedMilliseconds > Resources.WaitSearchingMs)
                     {
                         LogError("Timeout waiting for the Arduboy");
                         backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
                         return;
                     }
-                    Thread.Sleep(500);
+                    Thread.Sleep(Resources.WaitIdleSlowMs);
                 }
 
                 if (_cancelNow)
@@ -118,18 +122,7 @@ namespace ArduboyUploader
                 // Reset it
                 try
                 {
-                    var arduboy = new SerialPort {BaudRate = 1200, PortName = port};
-                    arduboy.DtrEnable = true;
-                    arduboy.Open();
-
-                    while (!arduboy.IsOpen)
-                        Thread.Sleep(100);
-
-                    arduboy.DtrEnable = false;
-                    arduboy.Close();
-                    arduboy.Dispose();
-
-                    Thread.Sleep(1000);
+                    SendReset(port);
                 }
                 catch (Exception ex)
                 {
@@ -140,91 +133,36 @@ namespace ArduboyUploader
 
                 s.Restart();
 
+                // Prepare AvrDude
+                ExtractAvrDudeFromResources();
+
+                while (s.ElapsedMilliseconds < Resources.WaitAfterResetMs) // Wait 1s
+                    Thread.Sleep(Resources.WaitIdleFastMs);
+
                 // Search again
                 while (!GetArduboyPort(out port))
                 {
-                    if (s.ElapsedMilliseconds > 8000) // Maximum the bootloader waits so it is pointless to wait more
+                    if (s.ElapsedMilliseconds > Resources.WaitBootloaderMs) // Maximum the bootloader waits so it is pointless to wait more
                     {
                         LogError("Timeout waiting for the Arduboy to appear again");
                         backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
                         return;
                     }
-                    Thread.Sleep(500);
+                    Thread.Sleep(Resources.WaitIdleSlowMs);
                 }
 
                 if (_cancelNow)
                     return;
 
-                // Send Hex
-                var processStartInfo = new ProcessStartInfo()
-                {
-                    CreateNoWindow = true,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    FileName = "avrdude.exe",
-                    WorkingDirectory = Environment.CurrentDirectory,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    //Arguments = $"-C avrdude.conf -v -p atmega32u4 -c avr109 -P {port} -b 57600 -D -U flash:w:\"{hex}\":i"
-                    Arguments =
-                        $"-C custom.conf -p atmega32u4 -V -q -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
-                };
+                backgroundWorkerUploader.ReportProgress((int)UploadStatus.Transfering);
+                var status = UploadViaAvrDude(port, hex);
+                backgroundWorkerUploader.ReportProgress((int)status);
 
-                backgroundWorkerUploader.ReportProgress((int) UploadStatus.Transfering);
+                if (status != UploadStatus.Done) return; // Nothing more to do
 
-                var avrdude = new Process {StartInfo = processStartInfo};
-                var output = new StringBuilder();
-                var error = new StringBuilder();
-
-                avrdude.OutputDataReceived += (sender1, e1) =>
-                {
-                    if (e1.Data != null)
-                    {
-                        output.AppendLine(e1.Data);
-                    }
-                };
-                avrdude.ErrorDataReceived += (sender1, e1) =>
-                {
-                    if (e1.Data != null)
-                    {
-                        error.AppendLine(e1.Data);
-                    }
-                };
-
-                avrdude.Start();
-                avrdude.BeginErrorReadLine();
-                avrdude.BeginOutputReadLine();
-
-                var status = UploadStatus.ErrorAvrDude;
-                avrdude.WaitForExit(6000);
-
-                // Check the output to see if it was successful
-                var standardOutput = output.Append(error).ToString();
-
-                if (standardOutput.Contains("bytes of flash written") && standardOutput.Contains("Fuses OK") &&
-                    standardOutput.Contains("AVR device initialized") && standardOutput.Contains("done"))
-                    status = UploadStatus.Done;
-                else
-                    LogError("Error uploading the file to the Arduboy: " + standardOutput);
-
-                if (status == UploadStatus.Done)
-                {
-                    backgroundWorkerUploader.ReportProgress((int) status);
-                    Thread.Sleep(500);
-                    _cancelNow = true;
-                }
-                else
-                {
-                    // Error while transfering
-                    try
-                    {
-                        avrdude.Kill();
-                    }
-                    catch
-                    {
-                    } // Kill any leftover
-                    backgroundWorkerUploader.ReportProgress((int) status);
-                }
+                backgroundWorkerUploader.ReportProgress((int) status);
+                Thread.Sleep(Resources.WaitSuccessMs);
+                _cancelNow = true;
             }
             catch (Exception ex)
             {
@@ -233,46 +171,139 @@ namespace ArduboyUploader
             }
         }
 
-        private void Avrdude_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private static void ExtractAvrDudeFromResources()
         {
-            throw new NotImplementedException();
+            var appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+                Application.ProductName,Resources.ParamAvrDudeFolder);
+
+            Environment.CurrentDirectory = appPath;
+            if (Directory.Exists(appPath)) return;
+
+            // Prepare AvrDude
+            Directory.CreateDirectory(appPath);
+
+            File.WriteAllBytes("avrdude.exe", Resources.avrdude);
+            File.WriteAllBytes("custom.conf", Resources.custom);
+            File.WriteAllBytes("libusb0.dll", Resources.libusb0);
         }
 
-        private void LogError(string msg)
+        /// <summary>
+        /// Send reset signal via opening and closing the port at 1200 bauds
+        /// </summary>
+        /// <param name="port">COM port</param>
+        private static void SendReset(string port)
+        {
+            var arduboy = new SerialPort
+            {
+                BaudRate = 1200,
+                PortName = port,
+                DtrEnable = true
+            };
+            arduboy.Open();
+
+            while (!arduboy.IsOpen)
+                Thread.Sleep(Resources.WaitIdleFastMs);
+
+            arduboy.DtrEnable = false;
+            arduboy.Close();
+            arduboy.Dispose();
+        }
+
+        /// <summary>
+        /// Uploads an hex file via AvrDude
+        /// </summary>
+        /// <param name="port">COM port</param>
+        /// <param name="hex">Full path to the file</param>
+        /// <returns>The result of the operation</returns>
+        private static UploadStatus UploadViaAvrDude(string port, string hex)
+        {
+            // Send Hex
+            var processStartInfo = new ProcessStartInfo()
+            {
+                CreateNoWindow = true,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                FileName = "avrdude.exe",
+                WorkingDirectory = Environment.CurrentDirectory,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                //Arguments = $"-C avrdude.conf -v -p atmega32u4 -c avr109 -P {port} -b 57600 -D -U flash:w:\"{hex}\":i"
+                Arguments =
+                    $"-C custom.conf -p atmega32u4 -V -q -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
+            };
+
+            var avrdude = new Process {StartInfo = processStartInfo};
+            var output = new StringBuilder();
+            var error = new StringBuilder();
+
+            avrdude.OutputDataReceived += (sender1, e1) =>
+            {
+                if (e1.Data != null)
+                    output.AppendLine(e1.Data);
+            };
+            avrdude.ErrorDataReceived += (sender1, e1) =>
+            {
+                if (e1.Data != null)
+                    error.AppendLine(e1.Data);
+            };
+
+            avrdude.Start();
+            avrdude.BeginErrorReadLine();
+            avrdude.BeginOutputReadLine();
+            avrdude.WaitForExit(6000);
+            var standardOutput = output.Append(error).ToString();
+
+            var status = UploadStatus.ErrorAvrDude;
+
+            // Check the output to see if it was successful
+            if (standardOutput.Contains("bytes of flash written") && standardOutput.Contains("Fuses OK") &&
+                standardOutput.Contains("AVR device initialized") && standardOutput.Contains("done"))
+                status = UploadStatus.Done;
+            else
+            {
+                LogError("Error uploading the file to the Arduboy: " + standardOutput);
+
+                // Error while transfering
+                try
+                {
+                    avrdude.Kill();
+                }
+                catch{  }
+            }
+            return status;
+        }
+
+        private static void LogError(string msg)
         {
             try
             {
-                using (EventLog eventLog = new EventLog("Application"))
+                using (var eventLog = new EventLog("Application"))
                 {
                     eventLog.Source = "Application";
                     eventLog.WriteEntry(msg, EventLogEntryType.Warning);
                 }
             }
-            catch 
-            {  }
+            catch {  }
         }
 
-        private bool GetArduboyPort(out string port)
+        private static bool GetArduboyPort(out string port)
         {
             port = "";
             using (var s = new ManagementObjectSearcher("SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE" +
-                "(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR " +
-                "(PNPDeviceID LIKE '%VID_2341%PID_0036%') OR " +
-                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + // SparkFun Pro Micro
-                "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")) // SparkFun Pro Micro
-            {
+                "(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR " + "(PNPDeviceID LIKE '%VID_2341%PID_0036%') OR " +
+                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")) // SparkFun Pro Micro
                 foreach (var p in s.Get().Cast<ManagementBaseObject>().ToList())
                 {
                     port = p.GetPropertyValue("DeviceID").ToString();
                     return true;
                 }
-            }
             return false;
         }
 
         private void backgroundWorkerUploader_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             var status = (UploadStatus)e.ProgressPercentage;
+
             switch (status)
             {
                 case UploadStatus.Searching:
@@ -320,11 +351,9 @@ namespace ArduboyUploader
 
         private void buttonRetry_Click(object sender, EventArgs e)
         {
-            if(!backgroundWorkerUploader.IsBusy)
-            {
-                buttonRetry.Enabled = false;
-                backgroundWorkerUploader.RunWorkerAsync();
-            }
+            if (backgroundWorkerUploader.IsBusy) return;
+            buttonRetry.Enabled = false;
+            backgroundWorkerUploader.RunWorkerAsync();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -336,29 +365,5 @@ namespace ArduboyUploader
     internal enum UploadStatus
     {
         Transfering,Done,ErrorTransfering,ErrorFile,Searching,ErrorAvrDude
-    }
-    public class WebDownload : WebClient
-    {
-        /// <summary>
-        /// Time in milliseconds
-        /// </summary>
-        public int Timeout { get; set; }
-
-        public WebDownload() : this(30000) { }
-
-        public WebDownload(int timeout)
-        {
-            this.Timeout = timeout;
-        }
-
-        protected override WebRequest GetWebRequest(Uri address)
-        {
-            var request = base.GetWebRequest(address);
-            if (request != null)
-            {
-                request.Timeout = this.Timeout;
-            }
-            return request;
-        }
     }
 }

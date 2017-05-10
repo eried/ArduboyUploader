@@ -63,9 +63,9 @@ namespace ArduboyUploader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] avrdude_exe {
+        internal static byte[] avrdude {
             get {
-                object obj = ResourceManager.GetObject("avrdude_exe", resourceCulture);
+                object obj = ResourceManager.GetObject("avrdude", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace ArduboyUploader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] custom_conf {
+        internal static byte[] custom {
             get {
-                object obj = ResourceManager.GetObject("custom_conf", resourceCulture);
+                object obj = ResourceManager.GetObject("custom", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -123,10 +123,29 @@ namespace ArduboyUploader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] libusb0_dll {
+        internal static byte[] libusb0 {
             get {
-                object obj = ResourceManager.GetObject("libusb0_dll", resourceCulture);
+                object obj = ResourceManager.GetObject("libusb0", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to avrdude-6.3.
+        /// </summary>
+        internal static string ParamAvrDudeFolder {
+            get {
+                return ResourceManager.GetString("ParamAvrDudeFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 90.
+        /// </summary>
+        internal static int ParamMaximumHexFilesizeKB {
+            get {
+                object obj = ResourceManager.GetObject("ParamMaximumHexFilesizeKB", resourceCulture);
+                return ((int)(obj));
             }
         }
         
@@ -147,6 +166,66 @@ namespace ArduboyUploader.Properties {
             get {
                 object obj = ResourceManager.GetObject("transfer", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 1000.
+        /// </summary>
+        internal static int WaitAfterResetMs {
+            get {
+                object obj = ResourceManager.GetObject("WaitAfterResetMs", resourceCulture);
+                return ((int)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 8000.
+        /// </summary>
+        internal static int WaitBootloaderMs {
+            get {
+                object obj = ResourceManager.GetObject("WaitBootloaderMs", resourceCulture);
+                return ((int)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 100.
+        /// </summary>
+        internal static int WaitIdleFastMs {
+            get {
+                object obj = ResourceManager.GetObject("WaitIdleFastMs", resourceCulture);
+                return ((int)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 500.
+        /// </summary>
+        internal static int WaitIdleSlowMs {
+            get {
+                object obj = ResourceManager.GetObject("WaitIdleSlowMs", resourceCulture);
+                return ((int)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 15000.
+        /// </summary>
+        internal static int WaitSearchingMs {
+            get {
+                object obj = ResourceManager.GetObject("WaitSearchingMs", resourceCulture);
+                return ((int)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Int32 similar to 500.
+        /// </summary>
+        internal static int WaitSuccessMs {
+            get {
+                object obj = ResourceManager.GetObject("WaitSuccessMs", resourceCulture);
+                return ((int)(obj));
             }
         }
     }

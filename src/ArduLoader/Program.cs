@@ -1,14 +1,10 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using ArduboyUploader;
+using Microsoft.Win32;
 
-namespace ArduLoader
+namespace ArduboyUploader
 {
     static class Program
     {
@@ -16,8 +12,7 @@ namespace ArduLoader
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -86,13 +81,13 @@ namespace ArduLoader
 
         private static void RegisterMyProtocol(string app)
         {
-            RegistryKey key = Registry.ClassesRoot.OpenSubKey("arduboy");
-            key = Registry.ClassesRoot.CreateSubKey("arduboy");
-            key.SetValue(string.Empty, "URL: arduboy Protocol");
-            key.SetValue("URL Protocol", string.Empty);
-            key = key.CreateSubKey(@"shell\open\command");
-            key.SetValue(string.Empty, app + " " + "%1");
-            key.Close();
+            var k = Registry.ClassesRoot.OpenSubKey("arduboy");
+            k = Registry.ClassesRoot.CreateSubKey("arduboy");
+            k.SetValue(string.Empty, "URL: arduboy Protocol");
+            k.SetValue("URL Protocol", string.Empty);
+            k = k.CreateSubKey(@"shell\open\command");
+            k.SetValue(string.Empty, app + " " + "%1");
+            k.Close();
         }
 
         [DllImport("Shell32.dll")]
