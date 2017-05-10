@@ -378,11 +378,14 @@ namespace ArduboyUploader
             backgroundWorkerUploader.RunWorkerAsync();
         }
 
+        /// <summary>
+        /// Set a custom color for show that the embedded file is being use
+        /// </summary>
         public void SetAlternativeColor()
         {
             BackColor = Color.Yellow;
-            buttonCancel.BackColor = Color.Yellow;
-            buttonRetry.BackColor = Color.Yellow;
+            buttonCancel.BackColor = BackColor;
+            buttonRetry.BackColor = BackColor;
 
         }
     }
