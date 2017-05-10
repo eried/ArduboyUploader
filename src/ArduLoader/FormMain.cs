@@ -171,6 +171,9 @@ namespace ArduboyUploader
             }
         }
 
+        /// <summary>
+        /// Check and prepares AvrDude from embedded resources. Also sets Environment.CurrentDirectory
+        /// </summary>
         private static void ExtractAvrDudeFromResources()
         {
             var appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -268,16 +271,19 @@ namespace ArduboyUploader
             {
                 LogError("Error uploading the file to the Arduboy: " + standardOutput);
 
-                // Error while transfering
                 try
                 {
-                    avrdude.Kill();
+                    avrdude.Kill(); // Stop missing instances, if any
                 }
                 catch{  }
             }
             return status;
         }
 
+        /// <summary>
+        /// Logs the errors in the Windows log, under the Application branch (to avoid permission issues)
+        /// </summary>
+        /// <param name="msg">Message to log</param>
         private static void LogError(string msg)
         {
             try
@@ -291,6 +297,11 @@ namespace ArduboyUploader
             catch {  }
         }
 
+        /// <summary>
+        /// Looks up for a connected device
+        /// </summary>
+        /// <param name="port">COM port of the first device found (if any)</param>
+        /// <returns>True if a device was found</returns>
         private static bool GetArduboyPort(out string port)
         {
             port = "";
