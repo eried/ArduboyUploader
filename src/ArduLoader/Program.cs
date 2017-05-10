@@ -74,16 +74,43 @@ namespace ArduboyUploader
                     case "-bundle":
                     case "-package":
                     {
-                        if (GetInputFile(f, out string input) &&
-                            GetOutputFile(f, Path.GetFileNameWithoutExtension(input) + "_Uploader",
-                                out string output))
+                        try
                         {
-                            if (File.Exists(output))
-                                File.Delete(output);
+                            if (GetInputFile(f, out string input) &&
+                                GetOutputFile(f, Path.GetFileNameWithoutExtension(input) + "_Uploader",
+                                    out string output))
+                            {
+                                if (File.Exists(output))
+                                    File.Delete(output);
 
-                            var newResource = new EmbeddedResource(bundledPrefix + Path.GetFileName(input),
-                                ManifestResourceAttributes.Public, File.ReadAllBytes(input));
-                            AddResourcesToCurrentAssembly(newResource, bundledPrefix, output);
+                                string customIcon = null;
+                                var iconDialog = new OpenFileDialog
+                                {
+                                    Filter = "Icon file|*.ico",
+                                    Title = "Select a new icon or Cancel to keep the original icon"
+                                };
+                                if (iconDialog.ShowDialog(f) == DialogResult.OK)
+                                    customIcon = iconDialog.FileName;
+
+
+                                var newResource = new EmbeddedResource(bundledPrefix + Path.GetFileName(input),
+                                    ManifestResourceAttributes.Public, File.ReadAllBytes(input));
+                                AddResourcesToCurrentAssembly(newResource, bundledPrefix, output);
+
+                                if (!string.IsNullOrEmpty(customIcon))
+                                {
+                                    var iconStream = new FileStream(customIcon, FileMode.Open);
+                                    new IconChanger().ChangeIcon(output, new IconChanger.IconReader(iconStream).Icons);
+                                }
+
+                                MessageBox.Show(f,"Package created successfully in: " + Environment.NewLine + output,
+                                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(f,"Error creating the package: " + ex.Message, "Error", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
                         }
                     }
                         break;
@@ -92,8 +119,19 @@ namespace ArduboyUploader
                     case "-unpackage":
                     case "-unbundle":
                     {
-                        if (GetOutputFile(f, "ArduboyUploader", out string output))
-                            AddResourcesToCurrentAssembly(null, bundledPrefix, output);
+                        try
+                        {
+                            if (GetOutputFile(f, "ArduboyUploader", out string output))
+                                AddResourcesToCurrentAssembly(null, bundledPrefix, output);
+
+                            MessageBox.Show(f,"Package created successfully in: " + Environment.NewLine + output,
+                                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(f,"Error creating the package: " + ex.Message, "Error", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
                         break;
                     }
 
@@ -142,7 +180,7 @@ namespace ArduboyUploader
             var saveFile = new SaveFileDialog
             {
                 Filter = "Executable|*.exe",
-                Title = "Output for the packaged Uploader",
+                Title = "Output for the new Uploader",
                 FileName = tentativeName,
             };
 
@@ -161,7 +199,7 @@ namespace ArduboyUploader
             var openFile = new OpenFileDialog
             {
                 Filter = "Compatible files|*.hex;*.arduboy|Hex File|*.hex|Arduboy File|*.arduboy",
-                Title = "Select a file to upload to Arduboy",
+                Title = "Choose the input file for the Arduboy",
             };
 
             if (openFile.ShowDialog(form) == DialogResult.OK)
