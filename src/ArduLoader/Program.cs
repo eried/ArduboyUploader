@@ -122,10 +122,12 @@ namespace ArduboyUploader
                         try
                         {
                             if (GetOutputFile(f, "ArduboyUploader", out string output))
+                            {
                                 AddResourcesToCurrentAssembly(null, bundledPrefix, output);
 
-                            MessageBox.Show(f,"Package created successfully in: " + Environment.NewLine + output,
-                                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show(f, "Package created successfully in: " + Environment.NewLine + output,
+                                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -153,7 +155,7 @@ namespace ArduboyUploader
         /// <param name="assembly">Output path for the result</param>
         private static void AddResourcesToCurrentAssembly(Resource add, string removePrefix, string assembly)
         {
-            File.Copy(Process.GetCurrentProcess().MainModule.FileName, assembly);
+            File.Copy(Process.GetCurrentProcess().MainModule.FileName, assembly, true);
             var asm = AssemblyDefinition.ReadAssembly(assembly);
 
             if (!string.IsNullOrEmpty(removePrefix))
