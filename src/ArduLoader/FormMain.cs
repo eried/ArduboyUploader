@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ArduboyUploader.Properties;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.IO.Ports;
@@ -9,14 +11,13 @@ using System.Management;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using ArduboyUploader.Properties;
 
 namespace ArduboyUploader
 {
     public partial class FormMain : Form
     {
         private bool _cancelNow;
-        internal string InputFile;
+        internal string InputFile { get; set; }
 
         public FormMain()
         {
@@ -375,6 +376,14 @@ namespace ArduboyUploader
         private void FormMain_Load(object sender, EventArgs e)
         {
             backgroundWorkerUploader.RunWorkerAsync();
+        }
+
+        public void SetAlternativeColor()
+        {
+            BackColor = Color.Yellow;
+            buttonCancel.BackColor = Color.Yellow;
+            buttonRetry.BackColor = Color.Yellow;
+
         }
     }
 

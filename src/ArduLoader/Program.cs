@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ArduboyUploader.Properties;
 using Microsoft.Win32;
+using Mono.Cecil;
 
 namespace ArduboyUploader
 {
@@ -18,28 +24,154 @@ namespace ArduboyUploader
             Application.SetCompatibleTextRenderingDefault(false);
             var f = new FormMain();
 
+            const string bundledPrefix = "embedded:";
+
             if (Environment.GetCommandLineArgs().Length <= 1)
             {
-                var openFile = new OpenFileDialog
+                var input = "";
+                
+                // Check if there is an embedded resource
+                var r = GetBundledFileName(bundledPrefix);
+                
+                if (!string.IsNullOrEmpty(r))
+
+                    try
+                    {
+                        var name = r.Substring(bundledPrefix.Length);
+
+                        var path = Path.GetTempFileName();
+                        File.Delete(path);
+                        Directory.CreateDirectory(path);
+
+                        var bundledDestinationPath = Path.Combine(path, name);
+                        var outputStream = new FileStream(bundledDestinationPath,FileMode.Create);
+                        Assembly.GetEntryAssembly().GetManifestResourceStream(r).CopyTo(outputStream);
+                        outputStream.Close();
+
+                        input = bundledDestinationPath;
+                    }
+                    catch {  }
+
+                if (string.IsNullOrEmpty(input))
+                    GetInputFile(f, out input);
+                else
                 {
-                    Filter = "Compatible files|*.hex;*.arduboy|Hex File|*.hex|Arduboy File|*.arduboy",
-                    Title = "Select a file to upload to Arduboy",
-                };
-                if (openFile.ShowDialog(f) == DialogResult.OK)
-                    f.InputFile = openFile.FileName;
+                    // Special color for the background
+                    f.SetAlternativeColor();
+                }
+                f.InputFile = input;
             }
             else
             {
                 var c = Environment.GetCommandLineArgs()[1];
 
-                if (c.ToLower().Trim() == "-register")
-                    CheckAssociations();
-                else
-                    f.InputFile = Environment.GetCommandLineArgs()[1];
+                switch (c.ToLower().Trim())
+                {
+                    case "-register":
+                        CheckAssociations();
+                        break;
+
+                    case "-bundle":
+                    case "-package":
+                    {
+                        if (GetInputFile(f, out string input) &&
+                            GetOutputFile(f, Path.GetFileNameWithoutExtension(input) + "_Uploader",
+                                out string output))
+                        {
+                            if (File.Exists(output))
+                                File.Delete(output);
+
+                            var newResource = new EmbeddedResource(bundledPrefix + Path.GetFileName(input),
+                                ManifestResourceAttributes.Public, File.ReadAllBytes(input));
+                            AddResourcesToCurrentAssembly(newResource, bundledPrefix, output);
+                        }
+                    }
+                        break;
+
+                    case "-clean":
+                    case "-unpackage":
+                    case "-unbundle":
+                    {
+                        if (GetOutputFile(f, "ArduboyUploader", out string output))
+                            AddResourcesToCurrentAssembly(null, bundledPrefix, output);
+                        break;
+                    }
+
+                    default:
+                        f.InputFile = Environment.GetCommandLineArgs()[1];
+                        break;
+                }
             }
 
-            if (!String.IsNullOrEmpty(f.InputFile))
+            if (!string.IsNullOrEmpty(f.InputFile))
                 Application.Run(f);
+        }
+
+        /// <summary>
+        /// Adds and removes resources to the current assembly and copies the result back
+        /// </summary>
+        /// <param name="add">Resource to add</param>
+        /// <param name="removePrefix">Remove resources matching this prefix</param>
+        /// <param name="assembly">Output path for the result</param>
+        private static void AddResourcesToCurrentAssembly(Resource add, string removePrefix, string assembly)
+        {
+            File.Copy(Process.GetCurrentProcess().MainModule.FileName, assembly);
+            var asm = AssemblyDefinition.ReadAssembly(assembly);
+
+            if (!string.IsNullOrEmpty(removePrefix))
+                for (var i = asm.MainModule.Resources.Count - 1; i >= 0; i--)
+                    if (asm.MainModule.Resources[i].Name.StartsWith(removePrefix))
+                        asm.MainModule.Resources.RemoveAt(i);
+
+            if (add != null)
+                asm.MainModule.Resources.Add(add);
+
+            asm.Write(assembly);
+        }
+
+        private static string GetBundledFileName(string prefix)
+        {
+            foreach (var r in Assembly.GetEntryAssembly().GetManifestResourceNames())
+                if (r.StartsWith(prefix))
+                    return r;
+            return "";
+        }
+
+        private static bool GetOutputFile(IWin32Window form, string tentativeName, out string outputFile)
+        {
+            var saveFile = new SaveFileDialog
+            {
+                Filter = "Executable|*.exe",
+                Title = "Output for the packaged Uploader",
+                FileName = tentativeName,
+            };
+
+            if (saveFile.ShowDialog(form) == DialogResult.OK)
+            {
+                outputFile = saveFile.FileName;
+                return true;
+            }
+
+            outputFile = "";
+            return false;
+        }
+
+        private static bool GetInputFile(IWin32Window form, out string selectedFile)
+        {
+            var openFile = new OpenFileDialog
+            {
+                Filter = "Compatible files|*.hex;*.arduboy|Hex File|*.hex|Arduboy File|*.arduboy",
+                Title = "Select a file to upload to Arduboy",
+            };
+
+            if (openFile.ShowDialog(form) == DialogResult.OK)
+            {
+                selectedFile = openFile.FileName;
+                return true;
+            }
+
+            selectedFile = "";
+            return false;
         }
 
         private static void CheckAssociations()
@@ -48,25 +180,34 @@ namespace ArduboyUploader
             {
                 var l = Process.GetCurrentProcess().MainModule.FileName;
 
-                if (MessageBox.Show("Would you like to associate the '.hex' files with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (
+                    MessageBox.Show("Would you like to associate the '.hex' files with this program?", "Associations",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) ==
+                    DialogResult.Yes)
                 {
                     var k = "HKEY_CURRENT_USER\\Software\\Classes\\hexfile";
                     Registry.SetValue(k, "", "Hex file");
                     Registry.SetValue(k, "FriendlyTypeName", l);
-                    Registry.SetValue(k+ "\\shell\\open\\command", "", l + " \"%1\"");
+                    Registry.SetValue(k + "\\shell\\open\\command", "", l + " \"%1\"");
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\.hex", "", "hexfile");
                 }
 
-                if (MessageBox.Show("Would you like to associate the '.arduboy' files with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (
+                    MessageBox.Show("Would you like to associate the '.arduboy' files with this program?",
+                        "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {
                     var k = "HKEY_CURRENT_USER\\Software\\Classes\\arduboyfile";
                     Registry.SetValue(k, "", "Arduboy file");
                     Registry.SetValue(k, "FriendlyTypeName", l);
-                    Registry.SetValue(k+ "\\shell\\open\\command", "", l + " \"%1\"");
+                    Registry.SetValue(k + "\\shell\\open\\command", "", l + " \"%1\"");
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\.arduboy", "", "arduboyfile");
                 }
 
-                if (MessageBox.Show("Would you like to associate the 'arduboy:' protocol with this program?", "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (
+                    MessageBox.Show("Would you like to associate the 'arduboy:' protocol with this program?",
+                        "Associations", MessageBoxButtons.YesNo, MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     RegisterMyProtocol(l);
 
                 SHChangeNotify(134217728, 8192, IntPtr.Zero, IntPtr.Zero);
