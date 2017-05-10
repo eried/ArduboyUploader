@@ -87,7 +87,7 @@ namespace ArduboyUploader
                                 var iconDialog = new OpenFileDialog
                                 {
                                     Filter = "Icon file|*.ico",
-                                    Title = "Select a new icon or Cancel to keep the original icon"
+                                    Title = "Select a new icon or Cancel to leave the current one"
                                 };
                                 if (iconDialog.ShowDialog(f) == DialogResult.OK)
                                     customIcon = iconDialog.FileName;
