@@ -1,4 +1,4 @@
-﻿namespace ArduLoader
+﻿namespace ArduboyUploader
 {
     partial class FormMain
     {
@@ -87,9 +87,9 @@
             // pictureBoxStatus
             // 
             this.pictureBoxStatus.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.pictureBoxStatus.BackColor = System.Drawing.Color.Black;
             this.pictureBoxStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tableLayoutPanelContents.SetColumnSpan(this.pictureBoxStatus, 3);
-            this.pictureBoxStatus.Image = global::ArduLoader.Properties.Resources.searching;
             this.pictureBoxStatus.Location = new System.Drawing.Point(12, 13);
             this.pictureBoxStatus.Name = "pictureBoxStatus";
             this.pictureBoxStatus.Size = new System.Drawing.Size(256, 127);
@@ -140,7 +140,7 @@
             this.MinimizeBox = false;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Arduboy Upload";
+            this.Text = "Arduboy Uploader";
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.tableLayoutPanelContents.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatus)).EndInit();

@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E1DD350E-F56D-4B4D-95BF-B3C037CBCD84}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ArduLoader</RootNamespace>
+    <RootNamespace>ArduboyUploader</RootNamespace>
     <AssemblyName>abupload</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

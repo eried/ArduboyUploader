@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduLoader", "ArduLoader\ArduLoader.csproj", "{E1DD350E-F56D-4B4D-95BF-B3C037CBCD84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduboyUploader", "ArduLoader\ArduboyUploader.csproj", "{E1DD350E-F56D-4B4D-95BF-B3C037CBCD84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

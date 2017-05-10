@@ -1,7 +1,5 @@
-﻿using ArduLoader.Properties;
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -12,8 +10,9 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using ArduboyUploader.Properties;
 
-namespace ArduLoader
+namespace ArduboyUploader
 {
     public partial class FormMain : Form
     {
