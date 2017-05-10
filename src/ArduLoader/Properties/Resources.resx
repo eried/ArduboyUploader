@@ -136,4 +136,13 @@
   <data name="error3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\img\error3.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="avrdude_exe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\avrdude\avrdude.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="custom_conf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\avrdude\custom.conf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="libusb0_dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\avrdude\libusb0.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

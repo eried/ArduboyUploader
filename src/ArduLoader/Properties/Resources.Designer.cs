@@ -61,6 +61,26 @@ namespace ArduboyUploader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] avrdude_exe {
+            get {
+                object obj = ResourceManager.GetObject("avrdude_exe", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] custom_conf {
+            get {
+                object obj = ResourceManager.GetObject("custom_conf", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap done {
@@ -97,6 +117,16 @@ namespace ArduboyUploader.Properties {
             get {
                 object obj = ResourceManager.GetObject("error3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] libusb0_dll {
+            get {
+                object obj = ResourceManager.GetObject("libusb0_dll", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
