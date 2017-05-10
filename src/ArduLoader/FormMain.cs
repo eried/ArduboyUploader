@@ -74,7 +74,7 @@ namespace ArduboyUploader
                             }
                         }
 
-                        // Check the hex file (maximum size 90 KB, just to be sure)
+                        // Check the hex file (maximum size and extension just to be sure)
                         if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" ||
                             new FileInfo(input).Length > Resources.ParamMaximumHexFilesizeKB * 1024)
                         {
@@ -173,18 +173,23 @@ namespace ArduboyUploader
 
         private static void ExtractAvrDudeFromResources()
         {
-            var appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-                Application.ProductName,Resources.ParamAvrDudeFolder);
+            var appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Application.ProductName, Resources.ParamAvrDudeFolder);
+
+            if (!Directory.Exists(appPath))
+                Directory.CreateDirectory(appPath);
 
             Environment.CurrentDirectory = appPath;
-            if (Directory.Exists(appPath)) return;
 
             // Prepare AvrDude
-            Directory.CreateDirectory(appPath);
+            if (!File.Exists("avrdude.exe"))
+                File.WriteAllBytes("avrdude.exe", Resources.avrdude);
 
-            File.WriteAllBytes("avrdude.exe", Resources.avrdude);
-            File.WriteAllBytes("custom.conf", Resources.custom);
-            File.WriteAllBytes("libusb0.dll", Resources.libusb0);
+            if (!File.Exists("custom.conf"))
+                File.WriteAllBytes("custom.conf", Resources.custom);
+
+            if (!File.Exists("libusb0.dll"))
+                File.WriteAllBytes("libusb0.dll", Resources.libusb0);
         }
 
         /// <summary>
