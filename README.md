@@ -6,8 +6,9 @@ https://github.com/eried/ArduboyUploader/releases/
 
 ![Demo](/media/demo.gif)
 
-How to use it: https://www.youtube.com/watch?v=qxuTivK6bq0
-Create a setup for your game: https://www.youtube.com/watch?v=BVeW7hHzh5k
+*How to use it:* https://www.youtube.com/watch?v=qxuTivK6bq0
+
+*Create a setup for your game:* https://www.youtube.com/watch?v=BVeW7hHzh5k
 
 Get games and apps from my repository:
 http://arduboy.ried.cl
