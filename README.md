@@ -33,7 +33,7 @@ https://github.com/eried/ArduboyCollection
     |__) |__   |\/| /  \ \  /  /\  |                    
     |  \ |___  |  | \__/  \/  /~~\ |___                 
 
-    Just delete de files
+    Just delete the files
     (Optional) Open regedit.exe and delete HKEY_CURRENT_USER\Software\Classes\hexfile and HKEY_CLASSES_ROOT\arduboy
 
      ___     ___  __                                    
