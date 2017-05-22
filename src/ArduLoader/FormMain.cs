@@ -76,7 +76,7 @@ namespace ArduboyUploader
                         }
 
                         // Check the hex file (maximum size and extension just to be sure)
-                        if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" ||
+                        if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" || Path.GetFileName(input).Contains(".with_bootloader.") ||
                             new FileInfo(input).Length > Resources.ParamMaximumHexFilesizeKB * 1024)
                         {
                             throw new Exception("Invalid hex file");
