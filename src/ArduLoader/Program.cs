@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using ArduboyUploader.Properties;
 using Microsoft.Win32;
@@ -14,6 +15,12 @@ namespace ArduboyUploader
 {
     static class Program
     {
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, uint nCmdShow);
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -22,129 +29,160 @@ namespace ArduboyUploader
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            var p = Process.GetCurrentProcess();
             var f = new FormMain();
 
-            const string bundledPrefix = "embedded:";
+            var mutex = new Mutex(true, p.ProcessName + Application.ProductName, out bool instance);
 
-            if (Environment.GetCommandLineArgs().Length <= 1)
+            if (!instance)
             {
-                var input = "";
-                
-                // Check if there is an embedded resource
-                var r = GetBundledFileName(bundledPrefix);
-                
-                if (!string.IsNullOrEmpty(r))
+                // Search for instances of this application
+                var firstSeen = false;
 
-                    try
-                    {
-                        var name = r.Substring(bundledPrefix.Length);
-
-                        var path = Path.GetTempFileName();
-                        File.Delete(path);
-                        Directory.CreateDirectory(path);
-
-                        var bundledDestinationPath = Path.Combine(path, name);
-                        var outputStream = new FileStream(bundledDestinationPath,FileMode.Create);
-                        Assembly.GetEntryAssembly().GetManifestResourceStream(r).CopyTo(outputStream);
-                        outputStream.Close();
-
-                        input = bundledDestinationPath;
-                    }
-                    catch {  }
-
-                if (string.IsNullOrEmpty(input))
-                    GetInputFile(f, out input);
-                else
-                {
-                    // Special color for the background
-                    f.SetAlternativeColor();
-                }
-                f.InputFile = input;
+                foreach (var pr in Process.GetProcessesByName(p.ProcessName))
+                    if (pr.Id != p.Id)
+                        if (!firstSeen)
+                        {
+                            firstSeen = true;
+                            ShowWindow(pr.MainWindowHandle, 5);
+                            SetForegroundWindow(pr.MainWindowHandle);
+                        }
+                        else
+                            pr.Kill();
             }
             else
             {
-                var c = Environment.GetCommandLineArgs()[1];
+                const string bundledPrefix = "embedded:";
 
-                switch (c.ToLower().Trim())
+                if (Environment.GetCommandLineArgs().Length <= 1)
                 {
-                    case "-register":
-                        CheckAssociations();
-                        break;
+                    var input = "";
 
-                    case "-bundle":
-                    case "-package":
-                    {
+                    // Check if there is an embedded resource
+                    var r = GetBundledFileName(bundledPrefix);
+
+                    if (!string.IsNullOrEmpty(r))
+
                         try
                         {
-                            if (GetInputFile(f, out string input) &&
-                                GetOutputFile(f, Path.GetFileNameWithoutExtension(input) + "_Uploader",
-                                    out string output))
-                            {
-                                if (File.Exists(output))
-                                    File.Delete(output);
+                            var name = r.Substring(bundledPrefix.Length);
 
-                                string customIcon = null;
-                                var iconDialog = new OpenFileDialog
-                                {
-                                    Filter = "Icon file|*.ico",
-                                    Title = "Select a new icon or Cancel to leave the current one"
-                                };
-                                if (iconDialog.ShowDialog(f) == DialogResult.OK)
-                                    customIcon = iconDialog.FileName;
+                            var path = Path.GetTempFileName();
+                            File.Delete(path);
+                            Directory.CreateDirectory(path);
 
+                            var bundledDestinationPath = Path.Combine(path, name);
+                            var outputStream = new FileStream(bundledDestinationPath, FileMode.Create);
+                            Assembly.GetEntryAssembly().GetManifestResourceStream(r).CopyTo(outputStream);
+                            outputStream.Close();
 
-                                var newResource = new EmbeddedResource(bundledPrefix + Path.GetFileName(input),
-                                    ManifestResourceAttributes.Public, File.ReadAllBytes(input));
-                                AddResourcesToCurrentAssembly(newResource, bundledPrefix, output);
-
-                                if (!string.IsNullOrEmpty(customIcon))
-                                {
-                                    var iconStream = new FileStream(customIcon, FileMode.Open);
-                                    new IconChanger().ChangeIcon(output, new IconChanger.IconReader(iconStream).Icons);
-                                }
-
-                                MessageBox.Show(f,"Package created successfully in: " + Environment.NewLine + output,
-                                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
+                            input = bundledDestinationPath;
                         }
-                        catch (Exception ex)
+                        catch
                         {
-                            MessageBox.Show(f,"Error creating the package: " + ex.Message, "Error", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
                         }
-                    }
-                        break;
 
-                    case "-clean":
-                    case "-unpackage":
-                    case "-unbundle":
+                    if (string.IsNullOrEmpty(input))
+                        GetInputFile(f, out input);
+                    else
                     {
-                        try
-                        {
-                            if (GetOutputFile(f, "ArduboyUploader", out string output))
-                            {
-                                AddResourcesToCurrentAssembly(null, bundledPrefix, output);
-
-                                MessageBox.Show(f, "Package created successfully in: " + Environment.NewLine + output,
-                                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(f,"Error creating the package: " + ex.Message, "Error", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        }
-                        break;
+                        // Special color for the background
+                        f.SetAlternativeColor();
                     }
-
-                    default:
-                        f.InputFile = Environment.GetCommandLineArgs()[1];
-                        break;
+                    f.InputFile = input;
                 }
-            }
+                else
+                {
+                    var c = Environment.GetCommandLineArgs()[1];
 
-            if (!string.IsNullOrEmpty(f.InputFile))
-                Application.Run(f);
+                    switch (c.ToLower().Trim())
+                    {
+                        case "-register":
+                            CheckAssociations();
+                            break;
+
+                        case "-bundle":
+                        case "-package":
+                        {
+                            try
+                            {
+                                if (GetInputFile(f, out string input) &&
+                                    GetOutputFile(f, Path.GetFileNameWithoutExtension(input) + "_Uploader",
+                                        out string output))
+                                {
+                                    if (File.Exists(output))
+                                        File.Delete(output);
+
+                                    string customIcon = null;
+                                    var iconDialog = new OpenFileDialog
+                                    {
+                                        Filter = "Icon file|*.ico",
+                                        Title = "Select a new icon or Cancel to leave the current one"
+                                    };
+                                    if (iconDialog.ShowDialog(f) == DialogResult.OK)
+                                        customIcon = iconDialog.FileName;
+
+
+                                    var newResource = new EmbeddedResource(bundledPrefix + Path.GetFileName(input),
+                                        ManifestResourceAttributes.Public, File.ReadAllBytes(input));
+                                    AddResourcesToCurrentAssembly(newResource, bundledPrefix, output);
+
+                                    if (!string.IsNullOrEmpty(customIcon))
+                                    {
+                                        var iconStream = new FileStream(customIcon, FileMode.Open);
+                                        new IconChanger().ChangeIcon(output,
+                                            new IconChanger.IconReader(iconStream).Icons);
+                                    }
+
+                                    MessageBox.Show(f,
+                                        "Package created successfully in: " + Environment.NewLine + output,
+                                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(f, "Error creating the package: " + ex.Message, "Error",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                            }
+                        }
+                            break;
+
+                        case "-clean":
+                        case "-unpackage":
+                        case "-unbundle":
+                        {
+                            try
+                            {
+                                if (GetOutputFile(f, "ArduboyUploader", out string output))
+                                {
+                                    AddResourcesToCurrentAssembly(null, bundledPrefix, output);
+
+                                    MessageBox.Show(f,
+                                        "Package created successfully in: " + Environment.NewLine + output,
+                                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(f, "Error creating the package: " + ex.Message, "Error",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                            }
+                            break;
+                        }
+
+                        default:
+                            f.InputFile = Environment.GetCommandLineArgs()[1];
+                            break;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(f.InputFile))
+                    Application.Run(f);
+
+                GC.KeepAlive(mutex);
+            }
         }
 
         /// <summary>
