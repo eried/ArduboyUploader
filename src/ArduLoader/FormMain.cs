@@ -70,8 +70,7 @@ namespace ArduboyUploader
                         input = tmp;
                     }
 
-                    // Decompress if possible
-                   // if (Path.GetExtension(input).ToLower() == ".arduboy")
+                    // Decompress (if possible)
                     try
                     {
                         var tmpFolder = Path.GetTempFileName();
@@ -89,9 +88,9 @@ namespace ArduboyUploader
                         // Not a zip file
                     }
 
-
                     // Check the hex file (maximum size and extension just to be sure)
-                    if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" || Path.GetFileName(input).Contains(".with_bootloader.") ||
+                    if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" || 
+                        Path.GetFileName(input).Contains(".with_bootloader.") ||
                         new FileInfo(input).Length > Resources.ParamMaximumHexFilesizeKB * 1024)
                     {
                         throw new Exception("Invalid hex file");
