@@ -23,6 +23,18 @@ namespace ArduboyUploader
         {
             InitializeComponent();
             tableLayoutPanelContents.BorderStyle = BorderStyle.FixedSingle;
+
+            // Resize based on DPI
+            using (Graphics g = this.CreateGraphics())
+                ResizeFactor((int)Math.Floor(g.DpiX/48));
+        }
+
+        void ResizeFactor(int factor)
+        {
+            Width = 128 * factor + Width - pictureBoxStatus.Width;
+            Height = 64 * factor + Height - pictureBoxStatus.Height;
+            
+            CenterToScreen();
         }
 
         /// <summary>
@@ -84,7 +96,7 @@ namespace ArduboyUploader
                             break;
                         }
                     }
-                    catch (Exception ex)
+                    catch 
                     {
                         // Not a zip file
                     }
