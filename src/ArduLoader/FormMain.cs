@@ -33,7 +33,6 @@ namespace ArduboyUploader
         {
             Width = 128 * factor + Width - pictureBoxStatus.Width;
             Height = 64 * factor + Height - pictureBoxStatus.Height;
-            
             CenterToScreen();
         }
 
