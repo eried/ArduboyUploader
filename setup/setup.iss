@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Arduboy Uploader"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Erwin Ried"
 #define MyAppURL "http://arduboy.ried.cl"
 #define MyAppExeName "abupload.exe"
@@ -43,7 +43,7 @@ Name: "repolink2"; Description: "Neo Retro Games"; GroupDescription: "{#OnlineRe
 ; Name: "associations"; Description: "Configure program associations"; GroupDescription: "Arduboy Uploader settings";
 
 [Files]
-Source: "files\abupload.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "files\*"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

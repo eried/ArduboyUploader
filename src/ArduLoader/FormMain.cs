@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ArduboyUploader.Properties;
+using System.Text.RegularExpressions;
 
 namespace ArduboyUploader
 {
@@ -105,8 +106,8 @@ namespace ArduboyUploader
                     if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" ||
                         Path.GetFileName(input).Contains(Settings.Default.PreventUploadIfFilenameContains) ||
                         new FileInfo(input).Length > Settings.Default.MaximumHexFilesizeKB * 1024 ||
-                        !string.IsNullOrEmpty(Settings.Default.PreventUploadIfFileContains) && File.ReadAllText(input)
-                            .Contains(Settings.Default.PreventUploadIfFileContains))
+                        !string.IsNullOrEmpty(Settings.Default.PreventUploadIfFileContains) && 
+                        Regex.IsMatch(File.ReadAllText(input),Settings.Default.PreventUploadIfFileContains))
                         throw new Exception("Invalid hex file");
 
                     hex = input;

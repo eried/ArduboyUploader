@@ -6,7 +6,7 @@
       <Value Profile="(Default)">90</Value>
     </Setting>
     <Setting Name="PreventUploadIfFileContains" Type="System.String" Scope="User">
-      <Value Profile="(Default)">:2</Value>
+      <Value Profile="(Default)">:..7</Value>
     </Setting>
     <Setting Name="PreventUploadIfFilenameContains" Type="System.String" Scope="User">
       <Value Profile="(Default)">.with_bootloader.</Value>
