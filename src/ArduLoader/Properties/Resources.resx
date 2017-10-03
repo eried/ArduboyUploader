@@ -167,4 +167,7 @@
   <data name="WaitSuccessMs" type="System.Int32, mscorlib">
     <value>500</value>
   </data>
+  <data name="FileFilterHex" xml:space="preserve">
+    <value>*.hex</value>
+  </data>
 </root>

@@ -121,6 +121,15 @@ namespace ArduboyUploader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to *.hex.
+        /// </summary>
+        internal static string FileFilterHex {
+            get {
+                return ResourceManager.GetString("FileFilterHex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] libusb0 {
