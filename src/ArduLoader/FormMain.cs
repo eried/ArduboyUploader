@@ -1,5 +1,4 @@
-﻿using ArduboyUploader.Properties;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -11,13 +10,13 @@ using System.Management;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using ArduboyUploader.Properties;
 
 namespace ArduboyUploader
 {
     public partial class FormMain : Form
     {
         private bool _cancelNow;
-        internal string InputFile { get; set; }
 
         public FormMain()
         {
@@ -25,11 +24,15 @@ namespace ArduboyUploader
             tableLayoutPanelContents.BorderStyle = BorderStyle.FixedSingle;
 
             // Resize based on DPI
-            using (Graphics g = this.CreateGraphics())
-                ResizeFactor((int)Math.Floor(g.DpiX/48));
+            using (var g = CreateGraphics())
+            {
+                ResizeFactor((int) Math.Floor(g.DpiX / 48));
+            }
         }
 
-        void ResizeFactor(int factor)
+        internal string InputFile { get; set; }
+
+        private void ResizeFactor(int factor)
         {
             Width = 128 * factor + Width - pictureBoxStatus.Width;
             Height = 64 * factor + Height - pictureBoxStatus.Height;
@@ -37,7 +40,7 @@ namespace ArduboyUploader
         }
 
         /// <summary>
-        /// Checks if the provided path is local or remote
+        ///     Checks if the provided path is local or remote
         /// </summary>
         /// <param name="path">Path to check</param>
         /// <param name="clean">Return the path clean if needed</param>
@@ -49,19 +52,16 @@ namespace ArduboyUploader
 
             if (u.IsFile)
                 return true;
-            else
-            {
-                const string arduboyProtocol = "arduboy";
-                if (u.Scheme == arduboyProtocol)
-                    clean = path.Substring(arduboyProtocol.Length + 1); // Remove the custom protocol
+            const string arduboyProtocol = "arduboy";
+            if (u.Scheme == arduboyProtocol)
+                clean = path.Substring(arduboyProtocol.Length + 1); // Remove the custom protocol
 
-                return false;
-            }
+            return false;
         }
 
         private void backgroundWorkerUploader_DoWork(object sender, DoWorkEventArgs e)
         {
-            backgroundWorkerUploader.ReportProgress((int)UploadStatus.Searching);
+            backgroundWorkerUploader.ReportProgress((int) UploadStatus.Searching);
 
             try
             {
@@ -76,7 +76,8 @@ namespace ArduboyUploader
 
                         // Download file
                         File.Delete(tmp);
-                        tmp = Path.ChangeExtension(tmp, ".hex"); // Program is going to try to decompress it without checking the extension
+                        tmp = Path.ChangeExtension(tmp,
+                            ".hex"); // Program is going to try to decompress it without checking the extension
                         new WebDownload().DownloadFile(input, tmp);
                         input = tmp;
                     }
@@ -88,25 +89,25 @@ namespace ArduboyUploader
                         File.Delete(tmpFolder);
                         ZipFile.ExtractToDirectory(input, Directory.CreateDirectory(tmpFolder).FullName);
 
-                        foreach (var f in Directory.GetFiles(tmpFolder, "*.hex", SearchOption.AllDirectories))
+                        foreach (var f in Directory.GetFiles(tmpFolder, Resources.FileFilterHex,
+                            SearchOption.AllDirectories))
                         {
                             input = f; // Only use the first one
                             break;
                         }
                     }
-                    catch 
+                    catch
                     {
                         // Not a zip file
                     }
 
                     // Check the hex file (maximum size and extension just to be sure)
-                    if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" || 
+                    if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" ||
                         Path.GetFileName(input).Contains(Settings.Default.PreventUploadIfFilenameContains) ||
-                        new FileInfo(input).Length > Settings.Default.MaximumHexFilesizeKB * 1024 || 
-                        File.ReadAllText(input).Contains(Settings.Default.PreventUploadIfFileContains))
-                    {
+                        new FileInfo(input).Length > Settings.Default.MaximumHexFilesizeKB * 1024 ||
+                        !string.IsNullOrEmpty(Settings.Default.PreventUploadIfFileContains) && File.ReadAllText(input)
+                            .Contains(Settings.Default.PreventUploadIfFileContains))
                         throw new Exception("Invalid hex file");
-                    }
 
                     hex = input;
                 }
@@ -160,7 +161,8 @@ namespace ArduboyUploader
                 // Search again
                 while (!GetArduboyPort(out port))
                 {
-                    if (s.ElapsedMilliseconds > Resources.WaitBootloaderMs) // Maximum the bootloader waits so it is pointless to wait more
+                    if (s.ElapsedMilliseconds > Resources.WaitBootloaderMs
+                    ) // Maximum the bootloader waits so it is pointless to wait more
                     {
                         LogError("Timeout waiting for the Arduboy to appear again");
                         backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
@@ -172,9 +174,9 @@ namespace ArduboyUploader
                 if (_cancelNow)
                     return;
 
-                backgroundWorkerUploader.ReportProgress((int)UploadStatus.Transfering);
+                backgroundWorkerUploader.ReportProgress((int) UploadStatus.Transfering);
                 var status = UploadViaAvrDude(port, hex);
-                backgroundWorkerUploader.ReportProgress((int)status);
+                backgroundWorkerUploader.ReportProgress((int) status);
 
                 if (status != UploadStatus.Done) return; // Nothing more to do
 
@@ -185,12 +187,12 @@ namespace ArduboyUploader
             catch (Exception ex)
             {
                 LogError("General error: " + ex.Message);
-                backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
+                backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
             }
         }
 
         /// <summary>
-        /// Check and prepares AvrDude from embedded resources. Also sets Environment.CurrentDirectory
+        ///     Check and prepares AvrDude from embedded resources. Also sets Environment.CurrentDirectory
         /// </summary>
         private static void ExtractAvrDudeFromResources()
         {
@@ -214,7 +216,7 @@ namespace ArduboyUploader
         }
 
         /// <summary>
-        /// Send reset signal via opening and closing the port at 1200 bauds
+        ///     Send reset signal via opening and closing the port at 1200 bauds
         /// </summary>
         /// <param name="port">COM port</param>
         private static void SendReset(string port)
@@ -236,7 +238,7 @@ namespace ArduboyUploader
         }
 
         /// <summary>
-        /// Uploads an hex file via AvrDude
+        ///     Uploads an hex file via AvrDude
         /// </summary>
         /// <param name="port">COM port</param>
         /// <param name="hex">Full path to the file</param>
@@ -244,7 +246,7 @@ namespace ArduboyUploader
         private static UploadStatus UploadViaAvrDude(string port, string hex)
         {
             // Send Hex
-            var processStartInfo = new ProcessStartInfo()
+            var processStartInfo = new ProcessStartInfo
             {
                 CreateNoWindow = true,
                 RedirectStandardError = true,
@@ -284,7 +286,9 @@ namespace ArduboyUploader
             // Check the output to see if it was successful
             if (standardOutput.Contains("bytes of flash written") && standardOutput.Contains("Fuses OK") &&
                 standardOutput.Contains("AVR device initialized") && standardOutput.Contains("done"))
+            {
                 status = UploadStatus.Done;
+            }
             else
             {
                 LogError("Error uploading the file to the Arduboy: " + standardOutput);
@@ -293,13 +297,15 @@ namespace ArduboyUploader
                 {
                     avrdude.Kill(); // Stop missing instances, if any
                 }
-                catch{  }
+                catch
+                {
+                }
             }
             return status;
         }
 
         /// <summary>
-        /// Logs the errors in the Windows log, under the Application branch (to avoid permission issues)
+        ///     Logs the errors in the Windows log, under the Application branch (to avoid permission issues)
         /// </summary>
         /// <param name="msg">Message to log</param>
         private static void LogError(string msg)
@@ -312,31 +318,37 @@ namespace ArduboyUploader
                     eventLog.WriteEntry(msg, EventLogEntryType.Warning);
                 }
             }
-            catch {  }
+            catch
+            {
+            }
         }
 
         /// <summary>
-        /// Looks up for a connected device
+        ///     Looks up for a connected device
         /// </summary>
         /// <param name="port">COM port of the first device found (if any)</param>
         /// <returns>True if a device was found</returns>
         private static bool GetArduboyPort(out string port)
         {
             port = "";
-            using (var s = new ManagementObjectSearcher("SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE" +
+            using (var s = new ManagementObjectSearcher(
+                "SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE" +
                 "(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR " + "(PNPDeviceID LIKE '%VID_2341%PID_0036%') OR " +
-                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")) // SparkFun Pro Micro
+                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")
+            ) // SparkFun Pro Micro
+            {
                 foreach (var p in s.Get().Cast<ManagementBaseObject>().ToList())
                 {
                     port = p.GetPropertyValue("DeviceID").ToString();
                     return true;
                 }
+            }
             return false;
         }
 
         private void backgroundWorkerUploader_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            var status = (UploadStatus)e.ProgressPercentage;
+            var status = (UploadStatus) e.ProgressPercentage;
 
             switch (status)
             {
@@ -355,7 +367,7 @@ namespace ArduboyUploader
 
                 case UploadStatus.ErrorAvrDude:
                 case UploadStatus.ErrorTransfering:
-                    pictureBoxStatus.Image = status== UploadStatus.ErrorAvrDude? Resources.error3: Resources.error;
+                    pictureBoxStatus.Image = status == UploadStatus.ErrorAvrDude ? Resources.error3 : Resources.error;
                     buttonCancel.Text = "&Close";
                     buttonRetry.Enabled = true;
                     buttonRetry.Visible = true;
@@ -379,7 +391,7 @@ namespace ArduboyUploader
 
         private void backgroundWorkerUploader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if(_cancelNow)
+            if (_cancelNow)
                 Application.Exit();
         }
 
@@ -396,19 +408,23 @@ namespace ArduboyUploader
         }
 
         /// <summary>
-        /// Set a custom color for show that the embedded file is being use
+        ///     Set a custom color for show that the embedded file is being use
         /// </summary>
         public void SetAlternativeColor()
         {
             BackColor = Color.Yellow;
             buttonCancel.BackColor = BackColor;
             buttonRetry.BackColor = BackColor;
-
         }
     }
 
     internal enum UploadStatus
     {
-        Transfering,Done,ErrorTransfering,ErrorFile,Searching,ErrorAvrDude
+        Transfering,
+        Done,
+        ErrorTransfering,
+        ErrorFile,
+        Searching,
+        ErrorAvrDude
     }
 }
