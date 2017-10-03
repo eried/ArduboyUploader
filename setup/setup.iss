@@ -6,6 +6,7 @@
 #define MyAppPublisher "Erwin Ried"
 #define MyAppURL "http://arduboy.ried.cl"
 #define MyAppExeName "abupload.exe"
+#define OnlineRepo "Add links in the Start Menu folder:"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -29,14 +30,16 @@ SetupIconFile=..\src\ArduLoader\app.ico
 Compression=lzma/ultra64
 SolidCompression=yes
 InternalCompressLevel=ultra64
-UninstallDisplayName={#MyAppName} v{#MyAppVersion}
+UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={uninstallexe}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "repolink"; Description: "Create link to Erwin's Arduboy Collection in the Start Menu folder"; GroupDescription: "{cm:AdditionalIcons}"; Check: not WizardNoIcons
+Name: "repolink1"; Description: "Erwin's Arduboy Collection"; GroupDescription: "{#OnlineRepo}"; Check: not WizardNoIcons
+Name: "repolink2"; Description: "Neo Retro Games"; GroupDescription: "{#OnlineRepo}"; Check: not WizardNoIcons
+
 ; Name: "associations"; Description: "Configure program associations"; GroupDescription: "Arduboy Uploader settings";
 
 [Files]
@@ -46,7 +49,8 @@ Source: "files\abupload.exe"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{group}\Erwin's Arduboy Collection"; Filename: "{#MyAppURL}"; Tasks: repolink
+Name: "{group}\Links\Erwin's Arduboy Collection"; Filename: "{#MyAppURL}"; Tasks: repolink1
+Name: "{group}\Links\Neo Retro Games"; Filename: "http://arduboy.neoretro.games"; Tasks: repolink2
 
 [Run]
 Filename: "{app}\abupload.exe"; Parameters: "-register"
