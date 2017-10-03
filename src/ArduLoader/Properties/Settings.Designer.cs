@@ -12,7 +12,7 @@ namespace ArduboyUploader.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.0.1.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -20,6 +20,42 @@ namespace ArduboyUploader.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("90")]
+        public int MaximumHexFilesizeKB {
+            get {
+                return ((int)(this["MaximumHexFilesizeKB"]));
+            }
+            set {
+                this["MaximumHexFilesizeKB"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(":2")]
+        public string PreventUploadIfFileContains {
+            get {
+                return ((string)(this["PreventUploadIfFileContains"]));
+            }
+            set {
+                this["PreventUploadIfFileContains"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".with_bootloader.")]
+        public string PreventUploadIfFilenameContains {
+            get {
+                return ((string)(this["PreventUploadIfFilenameContains"]));
+            }
+            set {
+                this["PreventUploadIfFilenameContains"] = value;
             }
         }
     }

@@ -167,7 +167,4 @@
   <data name="WaitSuccessMs" type="System.Int32, mscorlib">
     <value>500</value>
   </data>
-  <data name="ParamMaximumHexFilesizeKB" type="System.Int32, mscorlib">
-    <value>90</value>
-  </data>
 </root>
