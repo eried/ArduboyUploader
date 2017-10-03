@@ -49,14 +49,13 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonCancel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlText;
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonCancel.Image = ((System.Drawing.Image)(resources.GetObject("buttonCancel.Image")));
-            this.buttonCancel.Location = new System.Drawing.Point(100, 147);
-            this.buttonCancel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.buttonCancel.Location = new System.Drawing.Point(171, 348);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(80, 30);
+            this.buttonCancel.Size = new System.Drawing.Size(156, 43);
             this.buttonCancel.TabIndex = 0;
             this.buttonCancel.TabStop = false;
             this.buttonCancel.Text = "&Cancel";
@@ -68,44 +67,44 @@
             // tableLayoutPanelContents
             // 
             this.tableLayoutPanelContents.ColumnCount = 3;
-            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33332F));
+            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanelContents.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanelContents.Controls.Add(this.pictureBoxStatus, 0, 0);
             this.tableLayoutPanelContents.Controls.Add(this.buttonCancel, 1, 1);
             this.tableLayoutPanelContents.Controls.Add(this.buttonRetry, 0, 1);
             this.tableLayoutPanelContents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelContents.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelContents.Name = "tableLayoutPanelContents";
-            this.tableLayoutPanelContents.RowCount = 3;
+            this.tableLayoutPanelContents.Padding = new System.Windows.Forms.Padding(6);
+            this.tableLayoutPanelContents.RowCount = 2;
             this.tableLayoutPanelContents.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelContents.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelContents.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanelContents.Size = new System.Drawing.Size(280, 191);
+            this.tableLayoutPanelContents.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanelContents.Size = new System.Drawing.Size(500, 400);
             this.tableLayoutPanelContents.TabIndex = 2;
             // 
             // pictureBoxStatus
             // 
-            this.pictureBoxStatus.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.pictureBoxStatus.BackColor = System.Drawing.Color.Black;
-            this.pictureBoxStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tableLayoutPanelContents.SetColumnSpan(this.pictureBoxStatus, 3);
-            this.pictureBoxStatus.Location = new System.Drawing.Point(12, 13);
+            this.pictureBoxStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBoxStatus.Location = new System.Drawing.Point(10, 9);
+            this.pictureBoxStatus.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pictureBoxStatus.Name = "pictureBoxStatus";
-            this.pictureBoxStatus.Size = new System.Drawing.Size(256, 127);
-            this.pictureBoxStatus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBoxStatus.Size = new System.Drawing.Size(480, 333);
+            this.pictureBoxStatus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxStatus.TabIndex = 1;
             this.pictureBoxStatus.TabStop = false;
             // 
             // buttonRetry
             // 
-            this.buttonRetry.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.buttonRetry.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonRetry.Image = ((System.Drawing.Image)(resources.GetObject("buttonRetry.Image")));
-            this.buttonRetry.Location = new System.Drawing.Point(12, 147);
-            this.buttonRetry.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
+            this.buttonRetry.Location = new System.Drawing.Point(9, 348);
             this.buttonRetry.Name = "buttonRetry";
-            this.buttonRetry.Size = new System.Drawing.Size(80, 30);
+            this.buttonRetry.Size = new System.Drawing.Size(156, 43);
             this.buttonRetry.TabIndex = 2;
             this.buttonRetry.TabStop = false;
             this.buttonRetry.Text = "&Retry";
@@ -119,23 +118,23 @@
             // toolTipInfo
             // 
             this.toolTipInfo.AutoPopDelay = 20000;
-            this.toolTipInfo.InitialDelay = 500;
+            this.toolTipInfo.InitialDelay = 100;
             this.toolTipInfo.ReshowDelay = 100;
             this.toolTipInfo.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTipInfo.ToolTipTitle = "Still can\'t upload?";
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(280, 191);
+            this.ClientSize = new System.Drawing.Size(500, 400);
             this.ControlBox = false;
             this.Controls.Add(this.tableLayoutPanelContents);
-            this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormMain";
