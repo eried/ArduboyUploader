@@ -1,5 +1,5 @@
 # Arduboy Uploader
-Fast and clean Arduboy program uploader (compiled hex files).
+Fast and clean Arduboy program uploader (compiled hex and arduboy files).
 
 I was not happy with the current uploaders so I made my own, check the source and download it here:
 https://github.com/eried/ArduboyUploader/releases/
