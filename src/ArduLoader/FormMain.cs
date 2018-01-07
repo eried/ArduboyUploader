@@ -148,7 +148,7 @@ namespace ArduboyUploader
                 {
                     LogError("Error putting the Arduboy in bootloader: " + ex.Message);
                     backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
-                    return;
+                    //return;
                 }
 
                 s.Restart();

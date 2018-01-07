@@ -156,7 +156,7 @@
     <value>1000</value>
   </data>
   <data name="WaitSearchingMs" type="System.Int32, mscorlib">
-    <value>15000</value>
+    <value>30000</value>
   </data>
   <data name="WaitIdleSlowMs" type="System.Int32, mscorlib">
     <value>500</value>

@@ -19,7 +19,7 @@ namespace ArduboyUploader.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -209,7 +209,7 @@ namespace ArduboyUploader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Int32 similar to 15000.
+        ///   Looks up a localized resource of type System.Int32 similar to 30000.
         /// </summary>
         internal static int WaitSearchingMs {
             get {

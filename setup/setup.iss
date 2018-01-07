@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Arduboy Uploader"
-#define MyAppVersion "1.1"
+#define MyAppVersion "1.2"
 #define MyAppPublisher "Erwin Ried"
 #define MyAppURL "http://arduboy.ried.cl"
 #define MyAppExeName "abupload.exe"
