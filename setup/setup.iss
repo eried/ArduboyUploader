@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Arduboy Uploader"
-#define MyAppVersion "1.2"
+#define MyAppVersion "1.3"
 #define MyAppPublisher "Erwin Ried"
 #define MyAppURL "http://arduboy.ried.cl"
 #define MyAppExeName "abupload.exe"
@@ -23,15 +23,16 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=..\LICENSE.txt
+LicenseFile=D:\GitHub\ArduboyUploader\LICENSE
 OutputDir=output
 OutputBaseFilename=ArduboyUploader_setup
 SetupIconFile=..\src\ArduLoader\app.ico
-Compression=lzma/ultra64
+Compression=zip
 SolidCompression=yes
 InternalCompressLevel=ultra64
 UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={uninstallexe}
+ShowLanguageDialog=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
