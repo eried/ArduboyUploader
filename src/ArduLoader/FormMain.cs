@@ -27,7 +27,7 @@ namespace ArduboyUploader
             // Resize based on DPI
             using (var g = CreateGraphics())
             {
-                ResizeFactor((int) Math.Floor(g.DpiX / 48));
+                ResizeFactor((int)Math.Floor(g.DpiX / 48));
             }
         }
 
@@ -62,7 +62,7 @@ namespace ArduboyUploader
 
         private void backgroundWorkerUploader_DoWork(object sender, DoWorkEventArgs e)
         {
-            backgroundWorkerUploader.ReportProgress((int) UploadStatus.Searching);
+            backgroundWorkerUploader.ReportProgress((int)UploadStatus.Searching);
 
             try
             {
@@ -106,15 +106,15 @@ namespace ArduboyUploader
                     if (!File.Exists(input) || Path.GetExtension(input).ToLower() != ".hex" ||
                         Path.GetFileName(input).Contains(Settings.Default.PreventUploadIfFilenameContains) ||
                         new FileInfo(input).Length > Settings.Default.MaximumHexFilesizeKB * 1024 ||
-                        !string.IsNullOrEmpty(Settings.Default.PreventUploadIfFileContains) && 
-                        Regex.IsMatch(File.ReadAllText(input),Settings.Default.PreventUploadIfFileContains))
+                        !string.IsNullOrEmpty(Settings.Default.PreventUploadIfFileContains) &&
+                        Regex.IsMatch(File.ReadAllText(input), Settings.Default.PreventUploadIfFileContains))
                         throw new Exception("Invalid hex file");
 
                     hex = input;
                 }
                 catch (Exception)
                 {
-                    backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorFile);
+                    backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorFile);
                     return;
                 }
 
@@ -130,7 +130,7 @@ namespace ArduboyUploader
                     if (s.ElapsedMilliseconds > Resources.WaitSearchingMs)
                     {
                         LogError("Timeout waiting for the Arduboy");
-                        backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
+                        backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                         return;
                     }
                     Thread.Sleep(Resources.WaitIdleSlowMs);
@@ -138,6 +138,9 @@ namespace ArduboyUploader
 
                 if (_cancelNow)
                     return;
+
+                // Prepare AvrDude
+                ExtractAvrDudeFromResources();
 
                 // Reset it
                 try
@@ -147,18 +150,16 @@ namespace ArduboyUploader
                 catch (Exception ex)
                 {
                     LogError("Error putting the Arduboy in bootloader: " + ex.Message);
-                    backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
+                    backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                     //return;
                 }
 
                 s.Restart();
-
-                // Prepare AvrDude
-                ExtractAvrDudeFromResources();
-
                 while (s.ElapsedMilliseconds < Resources.WaitAfterResetMs) // Wait 1s
                     Thread.Sleep(Resources.WaitIdleFastMs);
 
+                /*
+                */
                 // Search again
                 while (!GetArduboyPort(out port))
                 {
@@ -166,7 +167,7 @@ namespace ArduboyUploader
                     ) // Maximum the bootloader waits so it is pointless to wait more
                     {
                         LogError("Timeout waiting for the Arduboy to appear again");
-                        backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
+                        backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
                         return;
                     }
                     Thread.Sleep(Resources.WaitIdleSlowMs);
@@ -175,20 +176,20 @@ namespace ArduboyUploader
                 if (_cancelNow)
                     return;
 
-                backgroundWorkerUploader.ReportProgress((int) UploadStatus.Transfering);
+                backgroundWorkerUploader.ReportProgress((int)UploadStatus.Transfering);
                 var status = UploadViaAvrDude(port, hex);
-                backgroundWorkerUploader.ReportProgress((int) status);
+                backgroundWorkerUploader.ReportProgress((int)status);
 
                 if (status != UploadStatus.Done) return; // Nothing more to do
 
-                backgroundWorkerUploader.ReportProgress((int) status);
+                backgroundWorkerUploader.ReportProgress((int)status);
                 Thread.Sleep(Resources.WaitSuccessMs);
                 _cancelNow = true;
             }
             catch (Exception ex)
             {
                 LogError("General error: " + ex.Message);
-                backgroundWorkerUploader.ReportProgress((int) UploadStatus.ErrorTransfering);
+                backgroundWorkerUploader.ReportProgress((int)UploadStatus.ErrorTransfering);
             }
         }
 
@@ -261,7 +262,7 @@ namespace ArduboyUploader
                     $"-C custom.conf -p atmega32u4 -V -q -c avr109 -P {port} -b 115200 -D -U flash:w:\"{hex}\":i"
             };
 
-            var avrdude = new Process {StartInfo = processStartInfo};
+            var avrdude = new Process { StartInfo = processStartInfo };
             var output = new StringBuilder();
             var error = new StringBuilder();
 
@@ -335,7 +336,10 @@ namespace ArduboyUploader
             using (var s = new ManagementObjectSearcher(
                 "SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE" +
                 "(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR " + "(PNPDeviceID LIKE '%VID_2341%PID_0036%') OR " +
-                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")
+                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%') OR " +
+                "(PNPDeviceID LIKE '%VID_2A03%PID_0036%')")
+            //Aqee ^^^^, add for my leonardo bootloader
+
             ) // SparkFun Pro Micro
             {
                 foreach (var p in s.Get().Cast<ManagementBaseObject>().ToList())
@@ -349,7 +353,7 @@ namespace ArduboyUploader
 
         private void backgroundWorkerUploader_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            var status = (UploadStatus) e.ProgressPercentage;
+            var status = (UploadStatus)e.ProgressPercentage;
 
             switch (status)
             {
