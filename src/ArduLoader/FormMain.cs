@@ -335,7 +335,8 @@ namespace ArduboyUploader
             using (var s = new ManagementObjectSearcher(
                 "SELECT Name, DeviceID, PNPDeviceID FROM Win32_SerialPort WHERE" +
                 "(PNPDeviceID LIKE '%VID_2341%PID_8036%') OR " + "(PNPDeviceID LIKE '%VID_2341%PID_0036%') OR " +
-                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%')")
+                "(PNPDeviceID LIKE '%VID_1B4F%PID_9205%') OR " + "(PNPDeviceID LIKE '%VID_1B4F%PID_9206%') OR " +
+                "(PNPDeviceID LIKE '%VID_2A03%PID_0036%')")
             ) // SparkFun Pro Micro
             {
                 foreach (var p in s.Get().Cast<ManagementBaseObject>().ToList())
