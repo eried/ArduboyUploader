@@ -17,7 +17,7 @@ namespace ArduboyUploader
 {
     public partial class FormMain : Form
     {
-        private bool _cancelNow;
+        private bool _cancelNow, _alreadyFailed;
 
         public FormMain()
         {
@@ -355,7 +355,7 @@ namespace ArduboyUploader
             switch (status)
             {
                 case UploadStatus.Searching:
-                    pictureBoxStatus.Image = Resources.searching;
+                    pictureBoxStatus.Image = _alreadyFailed? Resources.retry: Resources.searching;
                     break;
 
                 case UploadStatus.Transfering:
@@ -401,6 +401,7 @@ namespace ArduboyUploader
         {
             if (backgroundWorkerUploader.IsBusy) return;
             buttonRetry.Enabled = false;
+            _alreadyFailed = true;
             backgroundWorkerUploader.RunWorkerAsync();
         }
 

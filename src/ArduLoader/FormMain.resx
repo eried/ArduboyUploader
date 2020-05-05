@@ -130,9 +130,6 @@
         CcqY4QAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="toolTipInfo.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <data name="buttonRetry.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAP5JREFUOE+l
@@ -143,17 +140,18 @@
         sbhnR5Y9AF0TNQHcm70MAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="buttonRetry.ToolTip" xml:space="preserve">
-    <value>Try the following:
--Check that the Arduboy is connected and powered on
--Try to use a different USB cable and port
--While powering the Arduboy, hold UP in the d-pad
--Press the physical reset button with a paper clip
--Reinstall the Arduino Leonardo drivers</value>
-  </data>
   <metadata name="toolTipInfo.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="buttonRetry.ToolTip" xml:space="preserve">
+    <value>Try one or more of the following:
+-Check that the Arduboy is connected and powered on
+-Try to use a different USB cable and port
+-Hold UP while powering the Arduboy
+-Hold DOWN while powering the Arduboy
+-Press the physical reset button with a paper clip
+-Reinstall the Arduino Leonardo drivers</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAMAQEAAAAEAIAAoQgAANgAAADAwAAABACAAqCUAAF5CAAAgIAAAAQAgAKgQAAAGaAAAKAAAAEAA
