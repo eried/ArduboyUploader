@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Arduboy Uploader"
-#define MyAppVersion "1.3"
+#define MyAppVersion "1.4"
 #define MyAppPublisher "Erwin Ried"
 #define MyAppURL "http://arduboy.ried.cl"
 #define MyAppExeName "abupload.exe"
@@ -23,7 +23,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=D:\GitHub\ArduboyUploader\LICENSE
+LicenseFile=..\LICENSE
 OutputDir=output
 OutputBaseFilename=ArduboyUploader_setup
 SetupIconFile=..\src\ArduLoader\app.ico
@@ -40,6 +40,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "repolink1"; Description: "Erwin's Arduboy Collection"; GroupDescription: "{#OnlineRepo}"; Check: not WizardNoIcons
 Name: "repolink2"; Description: "Neo Retro Games"; GroupDescription: "{#OnlineRepo}"; Check: not WizardNoIcons
+Name: "repolink3"; Description: "Official Arduboy Quick Start"; GroupDescription: "{#OnlineRepo}"; Check: not WizardNoIcons   
 
 ; Name: "associations"; Description: "Configure program associations"; GroupDescription: "Arduboy Uploader settings";
 
@@ -52,7 +53,8 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 Name: "{group}\Links\Erwin's Arduboy Collection"; Filename: "{#MyAppURL}"; Tasks: repolink1
 Name: "{group}\Links\Neo Retro Games"; Filename: "http://arduboy.neoretro.games"; Tasks: repolink2
-
+Name: "{group}\Links\Official Arduboy Quick Start"; Filename: "https://arduboy.com/quick-start/"; Tasks: repolink3
+       
 [Run]
 Filename: "{app}\abupload.exe"; Parameters: "-register"
 ;Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
