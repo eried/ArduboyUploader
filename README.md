@@ -1,4 +1,6 @@
 # Arduboy Uploader
+[![GitHub All Releases](https://img.shields.io/github/downloads/eried/ArduboyUploader/total)](https://github.com/eried/ArduboyUploader/releases)
+
 Fast and clean Arduboy program uploader (compiled hex and arduboy files).
 
 I was not happy with the current uploaders so I made my own, check the source and download it here:
